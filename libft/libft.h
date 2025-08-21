@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <juhyeonl@student.hive.fi>         +#+  +:+       +#+        */
+/*   By: ljh3900 <ljh3900@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 17:42:38 by JuHyeon           #+#    #+#             */
-/*   Updated: 2025/02/28 15:06:01 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/06/08 01:23:45 by ljh3900          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <stddef.h>
 # include "get_next_line/get_next_line.h"
 # include "printf/ft_printf.h"
 # include <unistd.h>
@@ -48,6 +49,7 @@ void	ft_putstr_fd(char *s, int fd);
 char	**ft_split(char const *s, char c);
 char	*ft_strchr(const char *str, int c);
 char	*ft_strdup(const char *s);
+char	*ft_strndup(const char *src, size_t n);
 void	ft_striteri(char *s, void (*f)(unsigned int, char *));
 char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlcat(char *dst, const char *src, size_t size);
@@ -55,6 +57,7 @@ size_t	ft_strlcpy(char *dest, const char *src, size_t size);
 size_t	ft_strlen(const char *s);
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_strcmp(const char *s1, const char *s2);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
 char	*ft_strrchr(const char *s, int c);
 char	*ft_strtrim(char const *s1, char const *set);

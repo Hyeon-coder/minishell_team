@@ -1,33 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse.c                                            :+:      :+:    :+:   */
+/*   ft_strndup.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ljh3900 <ljh3900@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/25 23:14:33 by ljh3900           #+#    #+#             */
-/*   Updated: 2025/05/26 12:06:08 by ljh3900          ###   ########.fr       */
+/*   Created: 2025/06/08 01:19:28 by ljh3900           #+#    #+#             */
+/*   Updated: 2025/06/08 01:23:31 by ljh3900          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../libft.h"
 
-char    **tokenize(char *line)
+char	*ft_strndup(const char *src, size_t n)
 {
-    size_t  cap;
-    size_t  cnt;
-    char    **tokens;
-    cap = INITIAL_CAP;
-    cnt = 0;
-    if (!line || !*line || line[0] == '\0')
-        return NULL;
-    tokens = (char **)malloc(cap * sizeof(char *));
-    if (!tokens)
-        return NULL;
-    while (line[0])
-    {
-        
-    }
-    return NULL;
-}
+	size_t	len;
+	char	*dup;
 
+	len = 0;
+	while (src[len] && len < n)
+		len++;
+	dup = (char *)malloc(len + 1);
+	if (!dup)
+		return (NULL);
+	while (len--)
+		dup[len] = src[len];
+	dup[ft_strlen(src) < n ? ft_strlen(src) : n] = '\0';
+	return (dup);
+}
