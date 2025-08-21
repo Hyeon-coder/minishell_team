@@ -5,123 +5,117 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/20 23:40:45 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/07 19:36:15 by mhurtamo          #+#    #+#             */
+/*   Updated: 2025/08/22 01:52:00 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	set_com_type(char *str, t_com *token)
+static bool	is_redirection_token(enum e_Types type)
 {
-	token->type = WORD;
-	if (ftstrcmp("echo", str))
-		token->type = ECHO;
-	if (ftstrcmp("pwd", str))
-		token->type = PWD;
-	if (ftstrcmp("exit", str))
-		token->type = EXIT;
-	if (ftstrcmp("|", str))
-		token->type = PIPE;
-	if (ftstrcmp("unset", str))
-		token->type = UNSET;
-	if (ftstrcmp("export", str))
-		token->type = EXPORT;
-	if (ftstrcmp("-n", str))
-		token->type = N;
-	if (ftstrcmp(">", str))
-		token->type = RD_O;
-	if (ftstrcmp(">>", str))
-		token->type = RD_O_APPEND;
-	if (ftstrcmp("<", str))
-		token->type = RD_I;
-	if (ftstrcmp("<<", str))
-		token->type = HERE_DOC;
-	com_path_setter(str, token);
+	return (type == RD_I || type == RD_O || 
+			type == RD_O_APPEND || type == HERE_DOC);
 }
 
-size_t	arg_mover(char *str)
+static void	free_args_array(char **args, size_t count)
 {
 	size_t	i;
 
+	if (!args)
+		return;
+	
 	i = 0;
-	if (!str)
-		return (i);
-	while (str[i] && !is_separator(str[i]))
-		i++;
-	return (i);
-}
-
-char	*make_arg(char *str, t_shell *shell)
-{
-	size_t	i;
-	char	*arg;
-	char	*name;
-	bool	got_envs;
-
-	got_envs = false;
-	i = -1;
-	while (str[++i])
+	while (i < count && args[i])
 	{
-		if (str[i] == '$')
-		{
-			name = make_name(&str[i]);
-			if (!got_envs)
-				arg = env_parse_handler(str, name, shell, got_envs);
-			else
-				arg = env_parse_handler(arg, name, shell, got_envs);
-			got_envs = true;
-			if (!arg)
-				return (NULL);
-			i += arg_mover(&str[i]);
-		}
-	}
-	if (!got_envs)
-		arg = custom_dup(str);
-	return (arg);
-}
-
-char	**args_creation_loop(t_token **tokens, char **args,
-	t_shell *shell, size_t ac)
-{
-	size_t	i;
-	t_token	*current;
-
-	i = 0;
-	current = *tokens;
-	while (i < ac)
-	{
-		if (current->sq)
-		{
-			args[i] = custom_dup(current->str);
-		}
-		else
-			args[i] = make_arg(current->str, shell);
-		if (!args[i])
-		{
-			free_args(args);
-			return (NULL);
-		}
-		current = current->next;
+		free(args[i]);
+		args[i] = NULL;
 		i++;
 	}
+	free(args);
+}
+
+static char	**allocate_args_array(size_t count)
+{
+	char	**args;
+
+	if (count == 0)
+		return (NULL);
+	
+	args = (char **)malloc(sizeof(char *) * (count + 1));
+	if (!args)
+		return (NULL);
+	
+	// 배열 초기화
+	for (size_t i = 0; i <= count; i++)
+		args[i] = NULL;
+	
 	return (args);
+}
+
+static char	*safe_strdup(const char *str)
+{
+	char	*dup;
+
+	if (!str)
+		return (NULL);
+	
+	dup = ft_strdup(str);
+	if (!dup)
+	{
+		ft_putstr_fd("minishell: malloc failed\n", 2);
+		return (NULL);
+	}
+	
+	return (dup);
 }
 
 char	**make_args(t_token **tokens, t_shell *shell)
 {
-	size_t	ac;
+	t_token	*current;
 	char	**args;
+	size_t	count;
+	size_t	i;
 
-	ac = count_args(tokens);
-	args = (char **)malloc((ac + 1) * sizeof(char *));
-	if (!args)
-	{
-		print_mem_error("minishell: memory allocation failed", shell);
+	if (!tokens || !*tokens)
 		return (NULL);
+	
+	(void)shell;  // unused parameter
+	
+	count = count_args(tokens);
+	if (count == 0)
+		return (NULL);
+	
+	args = allocate_args_array(count);
+	if (!args)
+		return (NULL);
+	
+	current = *tokens;
+	i = 0;
+	
+	while (current && current->type != PIPE && i < count)
+	{
+		// 리다이렉션 토큰이면 건너뛰기
+		if (is_redirection_token(current->type))
+		{
+			current = current->next; // 리다이렉션 연산자
+			if (current)
+				current = current->next; // 파일명
+		}
+		else
+		{
+			// 일반 인자 복사
+			args[i] = safe_strdup(current->str);
+			if (!args[i])
+			{
+				free_args_array(args, i);
+				return (NULL);
+			}
+			i++;
+			current = current->next;
+		}
 	}
-	args = args_creation_loop(tokens, args, shell, ac);
-	if (args)
-		args[ac] = NULL;
+	
+	args[i] = NULL;
 	return (args);
 }

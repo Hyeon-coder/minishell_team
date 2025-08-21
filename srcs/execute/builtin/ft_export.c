@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:30:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 01:20:42 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 01:49:34 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@ static int handle_single_export(char *name, char *value, t_env **env_list)
 	node = env_find(*env_list, name);
 	if (node)
 	{
-		free(node->value);
+		if (node->value)
+			free(node->value);
 		node->value = value;
 		free(name);
 	}
