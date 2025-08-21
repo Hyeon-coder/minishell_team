@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 00:35:58 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 00:58:00 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 01:18:09 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ int		run_builtin_parent_with_redirs(t_com *cmd, t_shell *sh);
 
 /* Individual builtin commands */
 int		ft_cd(char **argv, t_env **env_list);
-int		ft_echo(char **argv, t_env *env_list, int last_exit);
+int		ft_echo(char **argv);
 int		ft_env(char **argv, t_env *env_list);
 int		ft_exit_builtin(t_shell *sh, char **argv, int is_parent, int in_pipe);
 int		ft_export(char **argv, t_env **env_list);

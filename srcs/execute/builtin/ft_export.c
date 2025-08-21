@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/08 01:13:41 by ljh3900           #+#    #+#             */
-/*   Updated: 2025/08/21 23:25:57 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/21 01:30:00 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 01:20:42 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ static int handle_single_export(char *name, char *value, t_env **env_list)
 
 	if (!is_valid_name(name))
 	{
-		err_with_cmd("export: '", name, "': not a valid identifier\n");
-		return (export_cleanup(name, value, NULL, 0));
+		err_with_cmd("export: '", name, "': not a valid identifier");
+		return (export_cleanup(name, value, NULL, 1));
 	}
 	node = env_find(*env_list, name);
 	if (node)

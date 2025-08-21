@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:30:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 00:45:48 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 01:17:43 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int	dispatch_builtin(char **argv, t_env **env_list, t_shell *sh)
 	if (ft_strcmp(cmd, "cd") == 0)
 		return (ft_cd(argv, env_list));
 	else if (ft_strcmp(cmd, "echo") == 0)
-		return (ft_echo(argv, *env_list, sh->last_exit));
+		return (ft_echo(argv));
 	else if (ft_strcmp(cmd, "env") == 0)
 		return (ft_env(argv, *env_list));
 	else if (ft_strcmp(cmd, "export") == 0)
