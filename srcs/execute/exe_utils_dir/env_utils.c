@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ljh3900 <ljh3900@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/07 18:19:49 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/06/08 07:38:13 by ljh3900          ###   ########.fr       */
+/*   Updated: 2025/08/23 02:44:45 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,30 @@ t_env  *env_init(char **envp)
 {
     t_env   *list = NULL;
     char    *eq;
-    size_t  len;
+    char    *name;
     int     i = 0;
 
     while (envp[i])
     {
         eq = ft_strchr(envp[i], '=');
         if (!eq)
-            return (env_clear(&list), NULL);
-        len = eq - envp[i];
-        if (!env_add_back(&list, env_new(ft_strndup(envp[i], len), eq + 1)))
-            return (env_clear(&list), NULL);
+        {
+            env_clear(&list);
+            return (NULL);
+        }
+        name = ft_strndup(envp[i], eq - envp[i]);
+        if (!name)
+        {
+            env_clear(&list);
+            return (NULL);
+        }
+        if (!env_add_back(&list, env_new(name, eq + 1)))
+        {
+            free(name);
+            env_clear(&list);
+            return (NULL);
+        }
+        free(name);
         i++;
     }
     return (list);
