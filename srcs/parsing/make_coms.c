@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 19:30:08 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 04:44:43 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:49:32 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ t_com	*make_com(t_token **tokens, t_shell *shell)
 	new->infile = NULL;
 	new->outfile = NULL;
 	new->heredoc_delimiter = NULL;
+	new->path = NULL;
+	new->redirections = NULL;
 	new->type = WORD;
 	new->is_piped = false;
 	new->redir_type_in = false;

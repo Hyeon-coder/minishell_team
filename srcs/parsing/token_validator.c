@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:56:42 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 13:36:02 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:37:30 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ bool	is_pipe_or_rd(t_token *token)
 		return (false);
 	if (token->type == HERE_DOC)
 		return (true);
-	if (ft_strcmp(token->str, "|") || ft_strcmp(token->str, ">>"))
+	if (ft_strcmp(token->str, "|") == 0 || ft_strcmp(token->str, ">>") == 0)
 		return (true);
-	if (ft_strcmp(token->str, "<") || ft_strcmp(token->str, ">"))
+	if (ft_strcmp(token->str, "<") == 0 || ft_strcmp(token->str, ">") == 0)
 		return (true);
 	return (false);
 }
@@ -103,6 +103,10 @@ size_t	increment_index(char *line)
 		return (i);
 	if (line[i] == '|')
 		return (1);
+	if (line[i] == 39)  /* 단일 따옴표 */
+		return (handle_sq(line));
+	if (line[i] == 34)  /* 이중 따옴표 */
+		return (handle_dq(line));
 	if (is_rd(line[i]))
 		i += rd_loop(&line[i]);
 	else

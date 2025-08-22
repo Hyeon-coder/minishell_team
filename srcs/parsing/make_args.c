@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 03:20:42 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:39:50 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,27 @@
 void	set_com_type(char *str, t_com *token)
 {
 	token->type = WORD;
-	if (ft_strcmp("echo", str))
+	if (!ft_strcmp("echo", str))
 		token->type = ECHO;
-	if (ft_strcmp("pwd", str))
+	if (!ft_strcmp("pwd", str))
 		token->type = PWD;
-	if (ft_strcmp("exit", str))
+	if (!ft_strcmp("exit", str))
 		token->type = EXIT;
-	if (ft_strcmp("|", str))
+	if (!ft_strcmp("|", str))
 		token->type = PIPE;
-	if (ft_strcmp("unset", str))
+	if (!ft_strcmp("unset", str))
 		token->type = UNSET;
-	if (ft_strcmp("export", str))
+	if (!ft_strcmp("export", str))
 		token->type = EXPORT;
-	if (ft_strcmp("-n", str))
+	if (!ft_strcmp("-n", str))
 		token->type = N;
-	if (ft_strcmp(">", str))
+	if (!ft_strcmp(">", str))
 		token->type = RD_O;
-	if (ft_strcmp(">>", str))
+	if (!ft_strcmp(">>", str))
 		token->type = RD_O_APPEND;
-	if (ft_strcmp("<", str))
+	if (!ft_strcmp("<", str))
 		token->type = RD_I;
-	if (ft_strcmp("<<", str))
+	if (!ft_strcmp("<<", str))
 		token->type = HERE_DOC;
 	com_path_setter(str, token);
 }
