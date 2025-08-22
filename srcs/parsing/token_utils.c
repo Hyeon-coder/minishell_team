@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:42:36 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 20:42:39 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:49:30 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,7 @@ size_t	rd_loop(char *line)
 	i = 0;
 	while (is_rd(line[i]))
 		i++;
-	if (i > 0)
-		i--;
-	return (i);
+	return (i);  /* 수정: i--를 제거 */
 }
 
 size_t	defloop(char *line)
@@ -107,7 +105,5 @@ size_t	defloop(char *line)
 			break ;
 		i++;
 	}
-	if (i > 0)
-		i--;
-	return (i);
+	return (i);  /* 수정: i--를 제거 */
 }
