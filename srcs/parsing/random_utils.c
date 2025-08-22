@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 21:11:44 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 12:25:11 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:07:49 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,6 @@ void	setenv_type(t_token *t)
 		t->type = LSIG;
 	else
 		t->type = EV;
-}
-
-bool	is_whitespace(char c)
-{
-	return ((c == ' ' || c == 9));
 }
 
 size_t	handle_sq(char *line)

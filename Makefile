@@ -6,7 +6,7 @@
 #    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/29 15:00:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/08/22 13:48:54 by juhyeonl         ###   ########.fr        #
+#    Updated: 2025/08/22 16:04:46 by juhyeonl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,12 +21,10 @@ OBJDIR  = objs
 SRCS = srcs/main.c \
 	srcs/utils.c \
 	srcs/missing_functions.c \
-	srcs/additional_functions.c \
-	srcs/execute/exe_utils_dir/cd_resolve_path.c \
+	srcs/missing_functions_2.c \
+	srcs/missing_functions_3.c \
 	srcs/execute/exe_utils_dir/env_utils.c \
 	srcs/execute/exe_utils_dir/execute_utils.c \
-	srcs/execute/exe_utils_dir/export_unset_utils.c \
-	srcs/execute/exe_utils_dir/is_builtin.c \
 	srcs/execute/builtin/ft_cd.c \
 	srcs/execute/builtin/ft_echo.c \
 	srcs/execute/builtin/ft_env.c \
@@ -37,7 +35,6 @@ SRCS = srcs/main.c \
 	srcs/parsing/arg_utils.c \
 	srcs/parsing/com_utils.c \
 	srcs/parsing/env_expansion.c \
-	srcs/parsing/error_printers.c \
 	srcs/parsing/free_functions.c \
 	srcs/parsing/line_validator.c \
 	srcs/parsing/make_args.c \
@@ -45,12 +42,10 @@ SRCS = srcs/main.c \
 	srcs/parsing/path_and_file_validators.c \
 	srcs/parsing/print_tokens.c \
 	srcs/parsing/random_utils.c \
-	srcs/parsing/str_utils.c \
 	srcs/parsing/tokenization.c \
 	srcs/parsing/token_utils.c \
 	srcs/parsing/token_validator.c \
 	srcs/parsing/token_dub_utils.c \
-	srcs/parsing/type_setter_utils.c \
 	srcs/execute/execute.c \
 	srcs/execute/builtin_parent.c \
 	srcs/execute/redir.c \

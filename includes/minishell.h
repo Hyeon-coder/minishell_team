@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 00:35:58 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 13:47:11 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 15:36:31 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,16 +114,32 @@ void	cleanup_shell(t_shell *sh);
 int		execute_commands(t_shell *sh);
 int		execute_external_command(t_com *cmd, t_shell *sh);
 int		setup_redirections(t_com *cmd);
-int		apply_redirs(t_com *cmd, t_shell *sh);  /* 추가된 선언 */
+int		apply_redirs(t_com *cmd, t_shell *sh);
 void	run_external(char **args, t_env *env_list, t_shell *sh);
 char	**env_to_array(t_env *env_list);
 
+/* External Execution Functions */
+void	ext_exec_direct_path(char **argv, char **envp, t_shell *sh);
+void	ext_exec_with_path_search(char **argv, t_env *env_list, char **envp, t_shell *sh);
+
+/* External Utility Functions */
+char	**ext_env_to_envp(t_env *env);
+int		ext_has_slash(const char *s);
+char	*ext_get_path_value(t_env *env_list);
+char	**ext_split_paths(const char *pathvar);
+int		ext_errno_to_exit(int e);
+int		ext_try_exec(const char *path, char **argv, char **envp);
+void	ext_print_perm_denied(const char *cmd);
+void	ext_print_no_such_file(const char *cmd);
+void	ext_print_is_directory(const char *cmd);
+void	ext_print_cmd_not_found(const char *cmd);
+
 /* Signal Functions */
 void	setup_signals(void);
-void	set_child_signals(void);  /* 추가된 선언 */
+void	set_child_signals(void);
 
 /* Pipe Utility Functions */
-void	close_pipe_pair(int p[2]);  /* 추가된 선언 */
+void	close_pipe_pair(int p[2]);
 
 /* Builtin Functions */
 int		ft_cd(char **args, t_env **env_list);

@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   missing_functions.c                                :+:      :+:    :+:   */
+/*   additional_utils.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 14:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 16:03:00 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 15:42:41 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../includes/minishell.h"
 
 /* 환경변수 값 가져오기 */
 char	*get_env_value(char *name, t_env *env_list)
@@ -23,12 +23,6 @@ char	*get_env_value(char *name, t_env *env_list)
 	if (node && node->value)
 		return (node->value);
 	return (NULL);
-}
-
-/* free_split (ft_free_2d_array의 별명) */
-void	free_split(char **arr)
-{
-	ft_free_2d_array(arr);
 }
 
 /* 빌트인 명령어 확인 */
@@ -59,6 +53,12 @@ char	*custom_dup(char *str)
 	if (!str)
 		return (NULL);
 	return (ft_strdup(str));
+}
+
+/* 메타 문자 확인 */
+bool	is_meta(char c)
+{
+	return (c == '|' || c == '<' || c == '>');
 }
 
 /* 메모리 에러 출력 */
