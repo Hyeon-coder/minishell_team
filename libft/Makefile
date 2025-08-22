@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ljh3900 <ljh3900@student.42.fr>            +#+  +:+       +#+         #
+#    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/12 23:58:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/06/08 01:23:55 by ljh3900          ###   ########.fr        #
+#    Updated: 2025/08/22 03:20:21 by juhyeonl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,8 @@ SRC = \
 	string/ft_split.c string/ft_strdup.c string/ft_strjoin.c string/ft_strlcpy.c \
 	string/ft_strmapi.c string/ft_strnstr.c string/ft_strtrim.c string/ft_strchr.c \
 	string/ft_striteri.c string/ft_strlcat.c string/ft_strlen.c string/ft_strncmp.c \
-	string/ft_strrchr.c string/ft_substr.c string/ft_strcmp.c string/ft_strndup.c
+	string/ft_strrchr.c string/ft_substr.c string/ft_strcmp.c string/ft_strndup.c \
+	string/ft_strcpy.c string/ft_strcat.c string/ft_strstr.c
 
 OBJ = $(SRC:.c=.o)
 

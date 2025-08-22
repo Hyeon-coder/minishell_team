@@ -6,11 +6,11 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 21:05:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/21 23:22:44 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/21 01:07:18 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Core implementation that knows the execution context. */
 /* Will terminate here; does not return on success/error except

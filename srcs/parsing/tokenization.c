@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenization.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:37:54 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 20:37:58 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/22 04:47:12 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ void	add_token(t_token **stack, t_token *new)
 
 	if (new->type == EV && !new->does_exist)
 	{
+		if (new->str)
+			free(new->str);
 		free(new);
 		return ;
 	}
@@ -107,8 +109,8 @@ t_token	*tokenize(char *line, t_token **stack, t_shell *shell)
 
 	if (!line_validator(line, shell))
 		return (NULL);
-	i = -1;
-	while (line[++i])
+	i = 0;
+	while (line[i])
 	{
 		if (!is_whitespace(line[i]))
 		{
@@ -121,8 +123,13 @@ t_token	*tokenize(char *line, t_token **stack, t_shell *shell)
 			add_token(stack, new);
 			i += increment_index(&line[i]);
 		}
+		else
+			i++;
 	}
 	if (!token_validator(stack, shell))
+	{
 		free_sh_tokens(stack);
+		return (NULL);
+	}
 	return (*stack);
 }

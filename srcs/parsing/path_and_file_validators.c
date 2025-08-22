@@ -5,58 +5,31 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/08 18:20:36 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/18 01:37:31 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 02:56:04 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-size_t	handle_dollar(char *line)
+bool	is_valid_file(char *str)
 {
-	size_t	i;
+	struct stat	path_stat;
 
-	i = 0;
-	while (line[i] && !is_separator(line[i]))
-		i++;
-	i++;
-	return (i);
+	if (!str)
+		return (false);
+	if (stat(str, &path_stat) != 0)
+		return (false);
+	return (S_ISREG(path_stat.st_mode));
 }
 
 bool	is_valid_dir(char *path)
 {
-	DIR	*dir;
+	struct stat	path_stat;
 
-	dir = opendir(path);
-	if (!dir)
-	{
+	if (!path)
 		return (false);
-	}
-	closedir(dir);
-	return (true);
-}
-
-bool	is_valid_file(char *str)
-{
-	int	fd;
-
-	fd = open(str, O_RDONLY);
-	if (fd == -1)
-	{
+	if (stat(path, &path_stat) != 0)
 		return (false);
-	}
-	close(fd);
-	return (true);
-}
-
-size_t	get_len(char *str)
-{
-	size_t	i;
-
-	i = 0;
-	if (!str)
-		return (i);
-	while (str[i])
-		i++;
-	return (i);
+	return (S_ISDIR(path_stat.st_mode));
 }

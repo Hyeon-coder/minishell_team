@@ -5,117 +5,138 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 19:36:15 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 01:52:00 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
+/*   Updated: 2025/08/22 03:20:42 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static bool	is_redirection_token(enum e_Types type)
+void	set_com_type(char *str, t_com *token)
 {
-	return (type == RD_I || type == RD_O || 
-			type == RD_O_APPEND || type == HERE_DOC);
+	token->type = WORD;
+	if (ftstrcmp("echo", str))
+		token->type = ECHO;
+	if (ftstrcmp("pwd", str))
+		token->type = PWD;
+	if (ftstrcmp("exit", str))
+		token->type = EXIT;
+	if (ftstrcmp("|", str))
+		token->type = PIPE;
+	if (ftstrcmp("unset", str))
+		token->type = UNSET;
+	if (ftstrcmp("export", str))
+		token->type = EXPORT;
+	if (ftstrcmp("-n", str))
+		token->type = N;
+	if (ftstrcmp(">", str))
+		token->type = RD_O;
+	if (ftstrcmp(">>", str))
+		token->type = RD_O_APPEND;
+	if (ftstrcmp("<", str))
+		token->type = RD_I;
+	if (ftstrcmp("<<", str))
+		token->type = HERE_DOC;
+	com_path_setter(str, token);
 }
 
-static void	free_args_array(char **args, size_t count)
+size_t	arg_mover(char *str)
 {
 	size_t	i;
 
-	if (!args)
-		return;
-	
 	i = 0;
-	while (i < count && args[i])
-	{
-		free(args[i]);
-		args[i] = NULL;
-		i++;
-	}
-	free(args);
-}
-
-static char	**allocate_args_array(size_t count)
-{
-	char	**args;
-
-	if (count == 0)
-		return (NULL);
-	
-	args = (char **)malloc(sizeof(char *) * (count + 1));
-	if (!args)
-		return (NULL);
-	
-	// 배열 초기화
-	for (size_t i = 0; i <= count; i++)
-		args[i] = NULL;
-	
-	return (args);
-}
-
-static char	*safe_strdup(const char *str)
-{
-	char	*dup;
-
 	if (!str)
-		return (NULL);
-	
-	dup = ft_strdup(str);
-	if (!dup)
+		return (i);
+	while (str[i] && !is_separator(str[i]))
+		i++;
+	return (i);
+}
+
+char	*make_arg(char *str, t_shell *shell)
+{
+	size_t	i;
+	char	*arg;
+	char	*name;
+	bool	got_envs;
+
+	got_envs = false;
+	i = 0;
+	arg = NULL;
+	while (str[i])
 	{
-		ft_putstr_fd("minishell: malloc failed\n", 2);
-		return (NULL);
+		if (str[i] == '$')
+		{
+			name = make_name(&str[i]);
+			if (name)
+			{
+				if (!got_envs)
+					arg = env_parse_handler(str, name, shell, got_envs);
+				else
+					arg = env_parse_handler(arg, name, shell, got_envs);
+				got_envs = true;
+				free(name);
+				if (!arg)
+					return (NULL);
+				i += arg_mover(&str[i]);
+			}
+			else
+				i++;
+		}
+		else
+			i++;
 	}
-	
-	return (dup);
+	if (!got_envs)
+		arg = custom_dup(str);
+	return (arg);
+}
+
+char	**args_creation_loop(t_token **tokens, char **args,
+	t_shell *shell, size_t ac)
+{
+	size_t	i;
+	t_token	*current;
+
+	i = 0;
+	current = *tokens;
+	while (i < ac && current)
+	{
+		if (current->type == PIPE)
+			break;
+		if (current->type != RD_I && current->type != RD_O 
+			&& current->type != RD_O_APPEND && current->type != HERE_DOC)
+		{
+			if (current->sq)
+				args[i] = custom_dup(current->str);
+			else
+				args[i] = make_arg(current->str, shell);
+			if (!args[i])
+			{
+				free_args(args);
+				return (NULL);
+			}
+			i++;
+		}
+		current = current->next;
+	}
+	return (args);
 }
 
 char	**make_args(t_token **tokens, t_shell *shell)
 {
-	t_token	*current;
+	size_t	ac;
 	char	**args;
-	size_t	count;
-	size_t	i;
 
-	if (!tokens || !*tokens)
+	ac = count_args(tokens);
+	if (ac == 0)
 		return (NULL);
-	
-	(void)shell;  // unused parameter
-	
-	count = count_args(tokens);
-	if (count == 0)
-		return (NULL);
-	
-	args = allocate_args_array(count);
+	args = (char **)malloc((ac + 1) * sizeof(char *));
 	if (!args)
-		return (NULL);
-	
-	current = *tokens;
-	i = 0;
-	
-	while (current && current->type != PIPE && i < count)
 	{
-		// 리다이렉션 토큰이면 건너뛰기
-		if (is_redirection_token(current->type))
-		{
-			current = current->next; // 리다이렉션 연산자
-			if (current)
-				current = current->next; // 파일명
-		}
-		else
-		{
-			// 일반 인자 복사
-			args[i] = safe_strdup(current->str);
-			if (!args[i])
-			{
-				free_args_array(args, i);
-				return (NULL);
-			}
-			i++;
-			current = current->next;
-		}
+		print_mem_error("minishell: memory allocation failed", shell);
+		return (NULL);
 	}
-	
-	args[i] = NULL;
+	args = args_creation_loop(tokens, args, shell, ac);
+	if (args)
+		args[ac] = NULL;
 	return (args);
 }

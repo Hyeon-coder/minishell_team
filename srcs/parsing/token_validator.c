@@ -3,32 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   token_validator.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:56:42 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 20:56:45 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/22 04:20:00 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-bool	check_if_exists(char *path, t_shell *shell, t_com *com)
-{
-	if (is_valid_file(path))
-		return (true);
-	if (!is_valid_file(path))
-	{
-		if (is_valid_dir(path))
-		{
-			if (com->type == PATH)
-				com->type = DIRECTORY;
-			return (true);
-		}
-		write_syntax_error("invalid directory or filename", shell);
-	}
-	shell->last_exit = 127;
-	return (false);
-}
 
 bool	does_contain_meta(t_token *token)
 {
@@ -66,6 +48,7 @@ bool	is_pipe_or_rd(t_token *token)
 		return (true);
 	return (false);
 }
+
 bool	is_token_valid(t_token *token)
 {
 	bool	not_present;
@@ -85,7 +68,6 @@ bool	is_token_valid(t_token *token)
 	if (does_contain_meta(token) && token->type == WORD)
 		not_present = false;
 	return (not_present);
-
 }
 
 bool	token_validator(t_token **tokens, t_shell *shell)
@@ -93,7 +75,7 @@ bool	token_validator(t_token **tokens, t_shell *shell)
 	t_token	*token;
 	bool	not_present;
 
-	if (!*tokens)
+	if (!tokens || !*tokens)
 		return (false);
 	token = *tokens;
 	not_present = true;
@@ -105,7 +87,10 @@ bool	token_validator(t_token **tokens, t_shell *shell)
 		token = token->next;
 	}
 	if (!not_present)
-		write_syntax_errord("minshell: syntax error near unexpected token ", token->str, shell);
+	{
+		write_syntax_errord("minishell: syntax error near unexpected token ",
+			token->str, shell);
+	}
 	return (not_present);
 }
 

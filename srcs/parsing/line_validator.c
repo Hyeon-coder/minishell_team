@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   line_validator.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 21:08:38 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 21:08:41 by mhurtamo         ###   ########.fr       */
+/*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 02:55:18 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,78 +15,77 @@
 bool	check_sq(char *line)
 {
 	size_t	i;
-	size_t	count;
+	bool	open;
 
-	count = 0;
 	i = 0;
+	open = false;
 	while (line[i])
 	{
-		if (line[i] == 39)
-			count++;
+		if (line[i] == 39 && !open)
+			open = true;
+		else if (line[i] == 39 && open)
+			open = false;
 		i++;
 	}
-	if (count % 2 == 0)
-		return (true);
-	return (false);
+	return (!open);
 }
 
 bool	check_dq(char *line)
 {
 	size_t	i;
-	size_t	count;
+	bool	open;
 
 	i = 0;
-	count = 0;
+	open = false;
 	while (line[i])
 	{
-		if (line[i] == 34)
-			count++;
+		if (line[i] == 34 && !open)
+			open = true;
+		else if (line[i] == 34 && open)
+			open = false;
 		i++;
 	}
-	if (count % 2 == 0)
-		return (true);
-	return (false);
+	return (!open);
 }
 
 bool	q_check_handler(char *line, char q)
 {
-	bool	ret;
-
-	if (q == 34)
-		ret = check_dq(line);
-	else
-		ret = check_sq(line);
-	return (ret);
+	if (q == 39)
+		return (check_sq(line));
+	else if (q == 34)
+		return (check_dq(line));
+	return (true);
 }
 
 size_t	q_count_handler(char *line, char q)
 {
-	size_t	ret;
+	size_t	count;
+	size_t	i;
 
-	if (q == 39)
-		ret = handle_sq(line);
-	else
-		ret = handle_dq(line);
-	return (ret);
+	count = 0;
+	i = 0;
+	while (line[i])
+	{
+		if (line[i] == q)
+			count++;
+		i++;
+	}
+	return (count);
 }
 
 bool	line_validator(char *line, t_shell *shell)
 {
-	size_t	i;
-
-	i = 0;
-	while (line[i])
+	if (!line || !*line)
+		return (false);
+	if (!check_sq(line))
 	{
-		if (line[i] == 39 || line[i] == 34)
-		{
-			if (!q_check_handler(&line[i], line[i]))
-			{
-				write_syntax_error("minishell: unclosed quotes are not supported", shell);
-				return (false);
-			}
-			i += q_count_handler(&line[i + 1], line[i]);
-		}
-		i++;
+		write_syntax_error("minishell: unclosed single quote", shell);
+		return (false);
+	}
+	if (!check_dq(line))
+	{
+		write_syntax_error("minishell: unclosed double quote", shell);
+		return (false);
 	}
 	return (true);
 }

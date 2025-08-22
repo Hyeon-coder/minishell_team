@@ -1,28 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_env.c                                           :+:      :+:    :+:   */
+/*   ft_strcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 03:01:14 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/22 03:03:38 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 03:03:50 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/minishell.h"
+#include "../libft.h"
 
-int	ft_env(char **argv, t_env *env_list)
+char	*ft_strcpy(char *dst, const char *src)
 {
-	t_env	*current;
+	int	i;
 
-	(void)argv;
-	current = env_list;
-	while (current)
+	i = 0;
+	while (src[i])
 	{
-		if (current->value && current->value[0])
-			printf("%s=%s\n", current->name, current->value);
-		current = current->next;
+		dst[i] = src[i];
+		i++;
 	}
-	return (0);
+	dst[i] = '\0';
+	return (dst);
 }

@@ -1,21 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipe_utils.c                                       :+:      :+:    :+:   */
+/*   ft_strcat.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 01:30:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/21 23:21:32 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/22 03:04:47 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 03:05:05 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+# include "../libft.h"
 
-void	close_pipe_pair(int p[2])
+char	*ft_strcat(char *dst, const char *src)
 {
-	if (p[0] != -1)
-		close(p[0]);
-	if (p[1] != -1)
-		close(p[1]);
+	int	i;
+	int	dst_len;
+
+	dst_len = ft_strlen(dst);
+	i = 0;
+	while (src[i])
+	{
+		dst[dst_len + i] = src[i];
+		i++;
+	}
+	dst[dst_len + i] = '\0';
+	return (dst);
 }

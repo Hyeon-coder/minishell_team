@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ljh3900 <ljh3900@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 01:30:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 01:49:34 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/06/08 01:13:41 by ljh3900           #+#    #+#             */
+/*   Updated: 2025/06/08 07:40:01 by ljh3900          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 static void parse_arg(const char *arg, char **out_name, char **out_value)
 {
@@ -35,14 +35,13 @@ static int handle_single_export(char *name, char *value, t_env **env_list)
 
 	if (!is_valid_name(name))
 	{
-		err_with_cmd("export: '", name, "': not a valid identifier");
-		return (export_cleanup(name, value, NULL, 1));
+		err_with_cmd("export: '", name, "': not a valid identifier\n");
+		return (export_cleanup(name, value, NULL, 0));
 	}
 	node = env_find(*env_list, name);
 	if (node)
 	{
-		if (node->value)
-			free(node->value);
+		free(node->value);
 		node->value = value;
 		free(name);
 	}

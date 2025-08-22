@@ -6,40 +6,27 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 19:36:15 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 01:42:07 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 03:21:10 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-static bool	is_redirection_token(enum e_Types type)
-{
-	return (type == RD_I || type == RD_O || 
-			type == RD_O_APPEND || type == HERE_DOC);
-}
 
 size_t	count_args(t_token **tokens)
 {
 	size_t	i;
 	t_token	*current;
 
+	if (!tokens || !*tokens)
+		return (0);
 	current = *tokens;
 	i = 0;
-	
 	while (current && current->type != PIPE)
 	{
-		// 리다이렉션 토큰이면 다음 토큰과 함께 건너뛰기
-		if (is_redirection_token(current->type))
-		{
-			current = current->next; // 리다이렉션 연산자
-			if (current)
-				current = current->next; // 파일명
-		}
-		else
-		{
-			i++; // 실제 명령어 인자만 카운트
-			current = current->next;
-		}
+		if (current->type != RD_I && current->type != RD_O 
+			&& current->type != RD_O_APPEND && current->type != HERE_DOC)
+			i++;
+		current = current->next;
 	}
 	return (i);
 }
@@ -62,92 +49,43 @@ size_t	count_coms(t_token **tokens)
 
 void	fill_o_dir(t_com *new, t_token *d)
 {
-	// 기존 outfile이 있다면 해제 (마지막 리다이렉션만 유효)
-	if (new->outfile)
-	{
-		free(new->outfile);
-		new->outfile = NULL;
-	}
-	
-	if (d->next && d->next->str)
-	{
-		new->outfile = ft_strdup(d->next->str);
-		if (!new->outfile)
-			return; // 메모리 할당 실패
-		
-		new->redir_type_out = true;
-		
-		// append 모드 설정
-		if (d->type == RD_O_APPEND)
-			new->append = true;
-		else
-			new->append = false;
-	}
+	if (!new || !d || !d->next)
+		return;
+	new->outfile = ft_strdup(d->next->str);
+	new->redir_type_out = true;
+	if (d->type == RD_O_APPEND)
+		new->append = true;
 }
 
 void	fill_in_dir(t_com *new, t_token *d)
 {
-	// 기존 infile이 있다면 해제 (마지막 리다이렉션만 유효)
-	if (new->infile)
-	{
-		free(new->infile);
-		new->infile = NULL;
-	}
-	
-	// heredoc이 있다면 해제
-	if (new->heredoc_delimiter)
-	{
-		free(new->heredoc_delimiter);
-		new->heredoc_delimiter = NULL;
-	}
-	
-	if (d->next && d->next->str)
-	{
-		if (d->type == HERE_DOC)
-		{
-			new->heredoc_delimiter = ft_strdup(d->next->str);
-		}
-		else
-		{
-			new->infile = ft_strdup(d->next->str);
-		}
-		new->redir_type_in = true;
-	}
+	if (!new || !d || !d->next)
+		return;
+	new->infile = ft_strdup(d->next->str);
+	new->redir_type_in = true;
 }
 
 void	setup_directors(t_com *new, t_token **tokens)
 {
+	t_token	*last_in_dir;
+	t_token	*last_o_dir;
 	t_token	*current;
 
+	if (!tokens || !*tokens)
+		return;
 	current = *tokens;
-	
-	// 명령어 구조체 초기화
-	new->infile = NULL;
-	new->outfile = NULL;
-	new->heredoc_delimiter = NULL;
-	new->redir_type_in = false;
-	new->redir_type_out = false;
-	new->append = false;
-	
-	// 토큰을 순회하면서 리다이렉션 처리
+	last_in_dir = NULL;
+	last_o_dir = NULL;
 	while (current && current->type != PIPE)
 	{
 		if (current->type == RD_I || current->type == HERE_DOC)
-		{
-			fill_in_dir(new, current);
-			// 다음 토큰(파일명)도 건너뛰기
-			if (current->next)
-				current = current->next;
-		}
-		else if (current->type == RD_O || current->type == RD_O_APPEND)
-		{
-			fill_o_dir(new, current);
-			// 다음 토큰(파일명)도 건너뛰기
-			if (current->next)
-				current = current->next;
-		}
-		
-		if (current)
-			current = current->next;
+			last_in_dir = current;
+		if (current->type == RD_O || current->type == RD_O_APPEND)
+			last_o_dir = current;
+		current = current->next;
 	}
+	if (last_in_dir)
+		fill_in_dir(new, last_in_dir);
+	if (last_o_dir)
+		fill_o_dir(new, last_o_dir);
 }

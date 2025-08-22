@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   export_unset_utils.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ljh3900 <ljh3900@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 07:36:42 by ljh3900           #+#    #+#             */
-/*   Updated: 2025/08/21 23:22:36 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/06/08 07:47:49 by ljh3900          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 int	export_cleanup(char *name, char *value, t_env *node, int ret_code)
 {

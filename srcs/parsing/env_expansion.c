@@ -5,125 +5,141 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 20:13:10 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/20 23:40:34 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 04:19:17 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char	*joiner(char *arg, char *env, char *res, char *name)
+t_env	*find_env(char *name, t_env **envs)
 {
-	bool	detected;
-	size_t	i;
-	size_t	j;
+	t_env	*current;
 
-	detected = false;
-	i = 0;
-	j = 0;
-	while (arg[i])
+	if (!envs || !*envs || !name)
+		return (NULL);
+	current = *envs;
+	while (current)
 	{
-		if (arg[i] == '$' && !detected)
-		{
-			detected = true;
-			if (env)
-				j += move_env(&res[j], env);
-			i += get_len(name);
-			if (!ftstrcmp("$", name))
-				i++;
-		}
-		else
-			res[j++] = arg[i++];
+		if (ftstrcmp(current->name, name))
+			return (current);
+		current = current->next;
 	}
-	res[j] = '\0';
-	return (res);
+	return (NULL);
 }
 
-char	*custom_join(char *arg, char *env, t_shell *shell, char *name)
+char	*make_name(char *str)
 {
 	size_t	i;
-	size_t	j;
-	char	*res;
+	char	*name;
 
-	i = get_arg_len(arg);
-	j = get_len(env);
-	res = (char *)malloc((i + j + 1) * sizeof(char));
-	if (!res)
-	{
-		print_mem_error("memory allocation failed", shell);
+	if (!str || str[0] != '$')
 		return (NULL);
-	}
-	res = joiner(arg, env, res, name);
-	return (res);
+	i = 1;
+	while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
+		i++;
+	if (i == 1)
+		return (custom_dup("$"));
+	name = (char *)malloc((i) * sizeof(char));
+	if (!name)
+		return (NULL);
+	ft_strlcpy(name, &str[1], i);
+	return (name);
 }
 
 char	*get_sig_val(int lsig)
 {
-	int		copy;
-	char	*ret;
-	size_t	len;
+	char	*val;
 
-	copy = lsig;
-	len = 1;
-	while (copy >= 10)
-	{
-		len++;
-		copy /= 10;
-	}
-	ret = (char *)malloc((len + 1) * sizeof(char));
-	if (!ret)
+	val = ft_itoa(lsig);
+	return (val);
+}
+
+char	*joiner(char *arg, char *env, char *res, char *name)
+{
+	char	*dollar_name;
+	char	*before_var;
+	char	*after_var;
+	char	*result;
+	char	*var_pos;
+
+	(void)res;
+	if (!arg || !name)
+		return (ft_strdup(arg ? arg : ""));
+	if (!env)
+		env = "";
+	dollar_name = ft_strjoin("$", name);
+	if (!dollar_name)
 		return (NULL);
-	ret[len] = '\0';
-	len--;
-	while (len > 0 && lsig >= 10)
+	var_pos = ft_strstr(arg, dollar_name);
+	if (!var_pos)
 	{
-		ret[len] = (lsig % 10) + 48;
-		lsig /= 10;
-		len--;
+		free(dollar_name);
+		return (ft_strdup(arg));
 	}
-	ret[len] = lsig + 48;
-	return (ret);
+	before_var = ft_substr(arg, 0, var_pos - arg);
+	if (!before_var)
+	{
+		free(dollar_name);
+		return (NULL);
+	}
+	after_var = var_pos + ft_strlen(dollar_name);
+	result = ft_strjoin(before_var, env);
+	if (result)
+	{
+		char *temp = result;
+		result = ft_strjoin(temp, after_var);
+		free(temp);
+	}
+	free(before_var);
+	free(dollar_name);
+	return (result);
+}
+
+char	*custom_join(char *arg, char *env, t_shell *shell, char *name)
+{
+	(void)shell;
+	return (joiner(arg, env, NULL, name));
 }
 
 char	*parse_env(char *str, char *name, t_shell *shell, bool got_envs)
 {
-	char	*ret;
 	t_env	*env;
-	char	*sig_val;
+	char	*result;
 
-	if (ftstrncmp(name, "?", 1))
-	{
-		sig_val = get_sig_val(shell->last_exit);
-		ret = custom_join(str, sig_val, shell, "?");
-	}
-	else if (ftstrcmp(name, "$"))
-		ret = custom_join(str, "$", shell, name);
-	else
-	{
-		env = find_env(name, &shell->envs);
-		if (!env)
-			ret = custom_join(str, NULL, shell, name);
-		else
-			ret = custom_join(str, env->value, shell, name);
-	}
-	if (got_envs)
-		free(str);
-	return (ret);
+	(void)got_envs;
+	if (!name)
+		return (custom_dup(str));
+	if (ftstrcmp(name, "$"))
+		return (get_sig_val(shell->last_exit));
+	env = find_env(name, &shell->envs);
+	if (!env || !env->value)
+		return (ft_strdup(""));
+	result = ft_strdup(env->value);
+	return (result);
 }
 
-char	*env_parse_handler(char *str, char *name, t_shell *shell, bool
-got_envs)
+char	*env_parse_handler(char *str, char *name, t_shell *shell, bool got_envs)
 {
-	char	*ret;
+	char	*env_value;
+	char	*result;
 
-	if (!name)
+	if (!got_envs)
 	{
-		if (str)
-			free(str);
-		print_mem_error("memory allocation failed", shell);
-		return (NULL);
+		env_value = parse_env(str, name, shell, got_envs);
+		if (!env_value)
+			return (NULL);
+		result = custom_join(str, env_value, shell, name);
+		free(env_value);
+		return (result);
 	}
-	ret = parse_env(str, name, shell, got_envs);
-	free(name);
-	return (ret);
+	else
+	{
+		env_value = parse_env(str, name, shell, got_envs);
+		if (!env_value)
+			return (ft_strdup(str));
+		result = custom_join(str, env_value, shell, name);
+		free(env_value);
+		return (result);
+	}
 }

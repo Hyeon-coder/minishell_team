@@ -1,28 +1,14 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_env.c                                           :+:      :+:    :+:   */
+/*   pipeline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 03:01:14 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 03:34:41 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/minishell.h"
+#include "../../includes/minishell.h"
 
-int	ft_env(char **argv, t_env *env_list)
-{
-	t_env	*current;
-
-	(void)argv;
-	current = env_list;
-	while (current)
-	{
-		if (current->value && current->value[0])
-			printf("%s=%s\n", current->name, current->value);
-		current = current->next;
-	}
-	return (0);
-}

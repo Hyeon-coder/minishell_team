@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   random_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 21:11:44 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 21:11:47 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/22 04:19:44 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,18 @@ size_t	handle_dq(char *line)
 bool	is_rd(char c)
 {
 	return ((c == '>' || c == '<'));
+}
+
+size_t	handle_dollar(char *line)
+{
+	size_t	i;
+
+	if (!line)
+		return (0);
+	i = 0;
+	if (line[i] == '?')
+		return (1);
+	while (line[i] && (ft_isalnum(line[i]) || line[i] == '_'))
+		i++;
+	return (i);
 }

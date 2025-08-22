@@ -3,34 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   print_tokens.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 19:28:14 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 19:28:16 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/22 04:19:32 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-void	write_syntax_error(char *msg, t_shell *shell)
-{
-	size_t	i;
-
-	i = 0;
-	shell->last_exit = 2;
-	if (!msg)
-	{
-		write(2, "\n", 1);
-		return ;
-	}
-	while (msg[i])
-	{
-		write(2, &msg[i], 1);
-		i++;
-	}
-	write(2, "\n", 1);
-	return ;
-}
 
 void	write_rest(char *m)
 {
@@ -69,18 +49,20 @@ void	write_syntax_errord(char *msg, char *m, t_shell *shell)
 	return ;
 }
 
-
 void	write_str(char *str)
 {
 	size_t	i;
 
-	i = -1;
+	i = 0;
 	if (!str)
 		return ;
 	if (!*str)
 		return ;
-	while (str[++i])
+	while (str[i])
+	{
 		write(1, &str[i], 1);
+		i++;
+	}
 	write(1, "\n", 1);
 }
 

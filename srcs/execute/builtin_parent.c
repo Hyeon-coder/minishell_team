@@ -1,19 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   builtin_parent.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 01:30:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/21 23:21:28 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 02:59:25 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
-void	set_child_signals(void)
+int	run_builtin_parent(t_com *cmd, t_shell *sh)
 {
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	return (handle_builtin_parent(cmd->args, &sh->envs, sh));
 }

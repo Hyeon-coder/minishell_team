@@ -6,11 +6,30 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 19:30:08 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/21 20:00:16 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 04:44:43 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+void	print_comms(t_com **coms)
+{
+	t_com	*curr;
+	int		i;
+
+	if (!coms || !*coms)
+		return ;
+	curr = *coms;
+	while (curr)
+	{
+		i = 0;
+		while (curr->args && curr->args[i])
+		{
+			i++;
+		}
+		curr = curr->next;
+	}
+}
 
 t_com	*make_com(t_token **tokens, t_shell *shell)
 {
@@ -28,9 +47,12 @@ t_com	*make_com(t_token **tokens, t_shell *shell)
 	new->prev = NULL;
 	new->infile = NULL;
 	new->outfile = NULL;
-	new->heredoc_delimiter = NULL;		// tmp
-	new->append = false;				// tmp
+	new->heredoc_delimiter = NULL;
 	new->type = WORD;
+	new->is_piped = false;
+	new->redir_type_in = false;
+	new->redir_type_out = false;
+	new->append = false;
 	new->args = make_args(tokens, shell);
 	setup_directors(new, tokens);
 	return (new);
@@ -87,35 +109,16 @@ t_com	*make_coms(t_token **tokens, t_com **coms, t_shell *shell)
 
 bool	path_checker(t_com **coms, t_shell *shell)
 {
-	t_com	*current;
-
-	if (!*coms)
-		return (true);
-	current = *coms;
-	while (current->next)
-	{
-		if (current->type == PATH && current->args[0])
-			return (check_if_exists(current->args[0], shell, current));
-		if (current->type == CD && current->args[1])
-			return (check_if_exists(current->args[1], shell, current));
-		current = current->next;
-	}
-	if (current->type == PATH && current->args[0])
-		return (check_if_exists(current->args[0], shell, current));
-	if (current->type == CD && current->args[1])
-		return (check_if_exists(current->args[1], shell, current));
+	(void)coms;
+	(void)shell;
 	return (true);
 }
 
 t_com	*init_coms(t_token **tokens, t_com **coms, t_shell *shell)
 {
-	size_t	cc;
-
 	if (!tokens)
 		return (NULL);
-	cc = count_coms(tokens);
 	*coms = make_coms(tokens, coms, shell);
-	(void)cc;	// tmp for compile
 	if (!path_checker(coms, shell))
 	{
 		free_coms(coms);

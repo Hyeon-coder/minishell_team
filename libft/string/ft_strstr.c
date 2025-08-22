@@ -1,40 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   wait_process.c                                     :+:      :+:    :+:   */
+/*   ft_strstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 01:30:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/21 23:23:32 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/22 03:19:08 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 03:19:21 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+# include "../libft.h"
 
-static int	get_exit_status(int status)
+char	*ft_strstr(const char *haystack, const char *needle)
 {
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	else if (WIFSIGNALED(status))
-		return (128 + WTERMSIG(status));
-	return (1);
-}
+	size_t	i;
+	size_t	j;
+	size_t	needle_len;
 
-int	wait_all(pid_t *pids, int n, t_shell *sh)
-{
-	int	i;
-	int	status;
-	int	last;
-
+	if (!haystack || !needle)
+		return (NULL);
+	if (!*needle)
+		return ((char *)haystack);
+	needle_len = ft_strlen(needle);
 	i = 0;
-	last = 0;
-	while (i < n)
+	while (haystack[i])
 	{
-		if (waitpid(pids[i], &status, 0) > 0)
-			last = get_exit_status(status);
+		j = 0;
+		while (haystack[i + j] && needle[j] && haystack[i + j] == needle[j])
+			j++;
+		if (j == needle_len)
+			return ((char *)&haystack[i]);
 		i++;
 	}
-	sh->last_exit = last;
-	return (last);
+	return (NULL);
 }

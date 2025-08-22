@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 21:01:14 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 01:13:00 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 04:34:07 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	free_args(char **args)
 	while (args[i])
 	{
 		free(args[i]);
-		args[i] = NULL;  // NULL로 설정하여 double free 방지
+		args[i] = NULL;
 		i++;
 	}
 	free(args);
@@ -32,7 +32,6 @@ void	free_path(t_com *com)
 {
 	if (!com)
 		return ;
-	// 파싱 단계에서 할당된 메모리인지 확인하고 해제
 	if (com->infile)
 	{
 		free(com->infile);
@@ -42,11 +41,6 @@ void	free_path(t_com *com)
 	{
 		free(com->outfile);
 		com->outfile = NULL;
-	}
-	if (com->heredoc_delimiter)
-	{
-		free(com->heredoc_delimiter);
-		com->heredoc_delimiter = NULL;
 	}
 }
 
@@ -61,21 +55,10 @@ void	free_coms(t_com **coms)
 	while (current)
 	{
 		temp = current->next;
-		
-		// args 해제
-		if (current->args)
-			free_args(current->args);
-		
-		// path 관련 해제
+		free_args(current->args);
 		free_path(current);
-		
-		// 이전 노드 연결 해제
-		if (current->prev)
-			current->prev->next = current->next;
-		if (current->next)
-			current->next->prev = current->prev;
-		
-		// 현재 노드 해제
+		current->prev = NULL;
+		current->next = NULL;
 		free(current);
 		current = temp;
 	}
@@ -93,25 +76,44 @@ void	free_sh_tokens(t_token **tokens)
 	while (current)
 	{
 		temp = current->next;
-		
-		// 문자열 해제
 		if (current->str)
 		{
 			free(current->str);
 			current->str = NULL;
 		}
-		
-		// 연결 해제
-		if (current->prev)
-			current->prev->next = current->next;
-		if (current->next)
-			current->next->prev = current->prev;
-		
-		// 현재 토큰 해제
+		current->prev = NULL;
+		current->next = NULL;
 		free(current);
 		current = temp;
 	}
 	*tokens = NULL;
+}
+
+void	free_env_list(t_env **envs)
+{
+	t_env	*current;
+	t_env	*temp;
+
+	if (!envs || !*envs)
+		return ;
+	current = *envs;
+	while (current)
+	{
+		temp = current->next;
+		if (current->name)
+		{
+			free(current->name);
+			current->name = NULL;
+		}
+		if (current->value)
+		{
+			free(current->value);
+			current->value = NULL;
+		}
+		free(current);
+		current = temp;
+	}
+	*envs = NULL;
 }
 
 void	free_both(t_shell *shell)

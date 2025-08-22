@@ -5,137 +5,125 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/07 18:19:49 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 02:01:02 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 03:00:37 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
-t_env  *env_new(const char *name, const char *value)
+t_env	*env_new(const char *name, const char *value)
 {
-    t_env  *node;
+	t_env	*new;
 
-    node = malloc(sizeof(t_env));
-    if (!node)
-        return (NULL);
-    node->name  = ft_strdup(name);
-    if (value)
-        node->value = ft_strdup(value);
-    else
-        node->value = NULL;
-    node->next  = NULL;
-    return (node);
-}
-
-int  env_add_back(t_env **lst, t_env *new_node)
-{
-    t_env  *p;
-
-    if (!lst || !new_node)
-        return (0);
-    if (!*lst)
-        *lst = new_node;
-    else
-    {
-        p = *lst;
-        while (p->next)
-            p = p->next;
-        p->next = new_node;
-    }
-    return (1);
-}
-
-void  env_clear(t_env **lst)
-{
-    t_env  *tmp;
-
-    while (*lst)
-    {
-        tmp = (*lst)->next;
-        free((*lst)->name);
-        free((*lst)->value);
-        free(*lst);
-        *lst = tmp;
-    }
-}
-
-t_env  *env_find(t_env *lst, const char *name)
-{
-    while (lst)
-    {
-        if (ft_strcmp(lst->name, name) == 0)
-            return (lst);
-        lst = lst->next;
-    }
-    return (NULL);
-}
-
-/* 추가된 env_set 함수 */
-int	env_set(t_env **env_list, const char *name, const char *value)
-{
-	t_env	*existing;
-	t_env	*new_node;
-
-	if (!env_list || !name)
-		return (-1);
-	
-	// 기존 변수 찾기
-	existing = env_find(*env_list, name);
-	if (existing)
+	new = malloc(sizeof(t_env));
+	if (!new)
+		return (NULL);
+	new->name = ft_strdup(name);
+	if (!new->name)
 	{
-		// 기존 값 해제하고 새 값 설정
-		if (existing->value)
-			free(existing->value);
-		
-		if (value)
+		free(new);
+		return (NULL);
+	}
+	if (value)
+		new->value = ft_strdup(value);
+	else
+		new->value = ft_strdup("");
+	if (!new->value)
+	{
+		free(new->name);
+		free(new);
+		return (NULL);
+	}
+	new->next = NULL;
+	return (new);
+}
+
+t_env	*env_init(char **envp)
+{
+	t_env	*head;
+	t_env	*current;
+	char	*eq_pos;
+	char	*name;
+	char	*value;
+	int		i;
+
+	if (!envp || !envp[0])
+		return (NULL);
+	head = NULL;
+	i = 0;
+	while (envp[i])
+	{
+		eq_pos = ft_strchr(envp[i], '=');
+		if (eq_pos)
 		{
-			existing->value = ft_strdup(value);
-			if (!existing->value)
-				return (-1);
+			name = ft_substr(envp[i], 0, eq_pos - envp[i]);
+			value = ft_strdup(eq_pos + 1);
 		}
 		else
 		{
-			existing->value = NULL;
+			name = ft_strdup(envp[i]);
+			value = ft_strdup("");
 		}
+		current = env_new(name, value);
+		free(name);
+		free(value);
+		if (current)
+			env_add_back(&head, current);
+		i++;
+	}
+	return (head);
+}
+
+int	env_add_back(t_env **lst, t_env *new_node)
+{
+	t_env	*current;
+
+	if (!lst || !new_node)
+		return (1);
+	if (!*lst)
+	{
+		*lst = new_node;
 		return (0);
 	}
-	
-	// 새 노드 생성
-	new_node = env_new(name, value);
-	if (!new_node)
-		return (-1);
-	
-	// 리스트에 추가
-	if (!env_add_back(env_list, new_node))
-	{
-		if (new_node->name)
-			free(new_node->name);
-		if (new_node->value)
-			free(new_node->value);
-		free(new_node);
-		return (-1);
-	}
-	
+	current = *lst;
+	while (current->next)
+		current = current->next;
+	current->next = new_node;
 	return (0);
 }
 
-t_env  *env_init(char **envp)
+void	env_clear(t_env **lst)
 {
-    t_env   *list = NULL;
-    char    *eq;
-    size_t  len;
-    int     i = 0;
+	t_env	*current;
+	t_env	*next;
 
-    while (envp[i])
-    {
-        eq = ft_strchr(envp[i], '=');
-        if (!eq)
-            return (env_clear(&list), NULL);
-        len = eq - envp[i];
-        if (!env_add_back(&list, env_new(ft_strndup(envp[i], len), eq + 1)))
-            return (env_clear(&list), NULL);
-        i++;
-    }
-    return (list);
+	if (!lst || !*lst)
+		return ;
+	current = *lst;
+	while (current)
+	{
+		next = current->next;
+		free(current->name);
+		free(current->value);
+		free(current);
+		current = next;
+	}
+	*lst = NULL;
+}
+
+t_env	*env_find(t_env *lst, const char *name)
+{
+	t_env	*current;
+
+	if (!lst || !name)
+		return (NULL);
+	current = lst;
+	while (current)
+	{
+		if (ft_strcmp(current->name, name) == 0)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
 }

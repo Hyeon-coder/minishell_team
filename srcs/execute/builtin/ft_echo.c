@@ -5,55 +5,65 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 01:30:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 01:17:28 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 04:18:17 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
-static int	is_n_option(const char *s)
+static int	is_n_flag(char *arg)
 {
 	int	i;
 
-	i = 1;
-	if (s[0] != '-' || s[1] != 'n')
+	if (!arg || arg[0] != '-')
 		return (0);
-	while (s[i] == 'n')
-		i++;
-	return (s[i] == '\0');
-}
-
-static int	check_n_options(char **argv, int *i)
-{
-	int	print_nl;
-
-	*i = 1;
-	print_nl = 1;
-	while (argv[*i] && is_n_option(argv[*i]))
+	if (arg[1] != 'n')
+		return (0);
+	i = 2;
+	while (arg[i])
 	{
-		print_nl = 0;
-		(*i)++;
+		if (arg[i] != 'n')
+			return (0);
+		i++;
 	}
-	return (print_nl);
+	return (1);
 }
 
 int	ft_echo(char **argv)
 {
 	int	i;
-	int	print_nl;
+	int	newline;
 
-	print_nl = check_n_options(argv, &i);
+	if (!argv || !argv[0])
+		return (1);
+
+	newline = 1;
+	i = 1;
 	
-	while (argv[i])
+	/* -n 옵션 처리 */
+	while (argv[i] && is_n_flag(argv[i]))
 	{
-		ft_putstr_fd(argv[i], 1);
-		if (argv[i + 1])
-			ft_putchar_fd(' ', 1);
+		newline = 0;
 		i++;
 	}
 	
-	if (print_nl)
-		ft_putchar_fd('\n', 1);
+	/* 인자들 출력 */
+	while (argv[i])
+	{
+		ft_putstr_fd(argv[i], STDOUT_FILENO);
+		if (argv[i + 1])
+			ft_putchar_fd(' ', STDOUT_FILENO);
+		i++;
+	}
+	
+	/* 개행 출력 */
+	if (newline)
+		ft_putchar_fd('\n', STDOUT_FILENO);
+	
+	/* 출력 버퍼 플러시 */
+	if (fflush(stdout) != 0)
+		return (1);
+		
 	return (0);
 }

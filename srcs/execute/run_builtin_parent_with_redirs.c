@@ -1,47 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   arg_utils.c                                        :+:      :+:    :+:   */
+/*   run_builtin_parent_with_redirs.c                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 04:18:47 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 02:59:39 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-size_t	get_len(char *str)
+int	run_builtin_parent_with_redirs(t_com *cmd, t_shell *sh)
 {
-	size_t	i;
+	int	saved_stdin;
+	int	saved_stdout;
+	int	exit_code;
 
-	if (!str)
-		return (0);
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
-size_t	get_arg_len(char *arg)
-{
-	return (get_len(arg));
-}
-
-size_t	move_env(char *res, char *env)
-{
-	size_t	i;
-	size_t	len;
-
-	if (!res || !env)
-		return (0);
-	len = get_arg_len(res);
-	i = 0;
-	while (env[i])
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	
+	if (apply_redirs(cmd, sh) != 0)
 	{
-		res[len + i] = env[i];
-		i++;
+		dup2(saved_stdin, STDIN_FILENO);
+		dup2(saved_stdout, STDOUT_FILENO);
+		close(saved_stdin);
+		close(saved_stdout);
+		return (1);
 	}
-	return (i);
+	
+	exit_code = handle_builtin_parent(cmd->args, &sh->envs, sh);
+	
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
+	
+	return (exit_code);
 }
