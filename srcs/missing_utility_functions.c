@@ -1,16 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   missing_utility_functions.c                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/22 13:08:50 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 13:08:51 by juhyeonl         ###   ########.fr       */
+/*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
+/*   Updated: 2025/08/22 12:00:00 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
+
+/* 구분자 확인 (make_args.c에서 사용) */
+bool	is_separator(char c)
+{
+	return (c == ' || is_whitespace(c) || is_meta(c) || c == '\0');
+}
 
 /* 2D 배열 메모리 해제 */
 void	ft_free_2d_array(char **arr)
@@ -42,13 +48,14 @@ void	err_with_cmd(char *prefix, char *cmd, char *suffix)
 /* 경로 해결 (기본 구현) */
 char	*resolve_path(char *path, t_env *env_list, int *alloc_flag)
 {
-	(void)env_list;
+	t_env	*home;
+
 	*alloc_flag = 0;
 	
 	if (!path)
 	{
 		/* HOME 디렉토리로 이동 */
-		t_env *home = env_find(env_list, "HOME");
+		home = env_find(env_list, "HOME");
 		if (home && home->value)
 		{
 			*alloc_flag = 1;
@@ -137,7 +144,7 @@ char	*ft_strndup(const char *s, size_t n)
 char	*find_in_path(const char *cmd, t_env *env_list)
 {
 	char	**paths;
-	char	*path_var;
+	t_env	*path_env;
 	char	*full_path;
 	char	*tmp;
 	int		i;
@@ -146,12 +153,11 @@ char	*find_in_path(const char *cmd, t_env *env_list)
 		return (NULL);
 	
 	/* PATH 환경변수 가져오기 */
-	t_env *path_env = env_find(env_list, "PATH");
+	path_env = env_find(env_list, "PATH");
 	if (!path_env || !path_env->value)
 		return (NULL);
 	
-	path_var = path_env->value;
-	paths = ft_split(path_var, ':');
+	paths = ft_split(path_env->value, ':');
 	if (!paths)
 		return (NULL);
 	

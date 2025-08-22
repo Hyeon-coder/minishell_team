@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 22:43:54 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 03:40:50 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 13:00:36 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,19 +33,18 @@ size_t	token_dub_loop(char *line, t_token *token)
 		if (line[i] == 39)  /* 단일 따옴표 */
 		{
 			token->sq = true;
-			i++;
-			i += handle_sq(&line[i]);
+			i += handle_sq(&line[i]);  /* handle_sq가 전체 따옴표 길이를 반환 */
 		}
 		else if (line[i] == 34)  /* 이중 따옴표 */
 		{
 			token->dq = true;
-			i++;
-			i += handle_dq(&line[i]);
+			i += handle_dq(&line[i]);  /* handle_dq가 전체 따옴표 길이를 반환 */
 		}
 		else if (line[i] == '$')
 		{
 			i++;
-			return (i + handle_dollar(&line[i]));
+			i += handle_dollar(&line[i]);
+			break;
 		}
 		else if (is_rd(line[i]) || line[i] == '|')
 			break;

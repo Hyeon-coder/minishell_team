@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 11:52:47 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:38:18 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,9 @@ static int	execute_single(t_shell *sh, t_com *cmd)
 	}
 	
 	/* 빌트인 명령어 확인 및 실행 */
-	if (is_builtin(cmd->argv[0]))
+	if (cmd->args && cmd->args[0] && is_builtin(cmd->args[0]))
 	{
-		status = handle_builtin_parent(cmd->argv, &sh->envs, sh);
+		status = handle_builtin_parent(cmd->args, &sh->envs, sh);
 	}
 	else
 	{
@@ -137,14 +137,14 @@ static int	execute_pipeline(t_shell *sh, t_com *cmd)
 				exit(1);
 			
 			/* 명령어 실행 */
-			if (is_builtin(current->argv[0]))
+			if (current->args && current->args[0] && is_builtin(current->args[0]))
 			{
-				status = handle_builtin_child(current->argv, &sh->envs, sh);
+				status = handle_builtin_child(current->args, &sh->envs, sh);
 				exit(status);
 			}
 			else
 			{
-				run_external(current->argv, sh->envs, sh);
+				run_external(current->args, sh->envs, sh);
 				exit(127);
 			}
 		}

@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 03:02:09 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:03:24 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ char	*resolve_path(char *arg, t_env *env_list, int *alloc_flag)
 	*alloc_flag = 0;
 	if (!arg)
 	{
-		home_env = env_find(env_list, "HOME");
+		home_env = find_env("HOME", &env_list);
 		if (!home_env || !home_env->value)
 		{
 			ft_putstr_fd("cd: HOME not set\n", 2);
@@ -30,7 +30,7 @@ char	*resolve_path(char *arg, t_env *env_list, int *alloc_flag)
 	}
 	if (ft_strcmp(arg, "~") == 0)
 	{
-		home_env = env_find(env_list, "HOME");
+		home_env = find_env("HOME", &env_list);
 		if (!home_env || !home_env->value)
 		{
 			ft_putstr_fd("cd: HOME not set\n", 2);
@@ -40,7 +40,7 @@ char	*resolve_path(char *arg, t_env *env_list, int *alloc_flag)
 	}
 	if (ft_strncmp(arg, "~/", 2) == 0)
 	{
-		home_env = env_find(env_list, "HOME");
+		home_env = find_env("HOME", &env_list);
 		if (!home_env || !home_env->value)
 		{
 			ft_putstr_fd("cd: HOME not set\n", 2);

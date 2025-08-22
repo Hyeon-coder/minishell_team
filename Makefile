@@ -6,7 +6,7 @@
 #    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/29 15:00:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/08/22 04:48:58 by juhyeonl         ###   ########.fr        #
+#    Updated: 2025/08/22 13:04:30 by juhyeonl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,8 @@ OBJDIR  = objs
 
 SRCS = srcs/main.c \
 	srcs/utils.c \
+	srcs/missing_functions.c \
+	srcs/additional_functions.c \
 	srcs/execute/exe_utils_dir/cd_resolve_path.c \
 	srcs/execute/exe_utils_dir/env_utils.c \
 	srcs/execute/exe_utils_dir/execute_utils.c \

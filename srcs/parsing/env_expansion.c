@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 04:19:17 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:16:20 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ t_env	*find_env(char *name, t_env **envs)
 	current = *envs;
 	while (current)
 	{
-		if (ftstrcmp(current->name, name))
+		if (ft_strcmp(current->name, name))
 			return (current);
 		current = current->next;
 	}
@@ -110,7 +110,7 @@ char	*parse_env(char *str, char *name, t_shell *shell, bool got_envs)
 	(void)got_envs;
 	if (!name)
 		return (custom_dup(str));
-	if (ftstrcmp(name, "$"))
+	if (ft_strcmp(name, "$"))
 		return (get_sig_val(shell->last_exit));
 	env = find_env(name, &shell->envs);
 	if (!env || !env->value)

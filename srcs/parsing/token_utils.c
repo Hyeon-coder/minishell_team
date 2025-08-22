@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:42:36 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 20:42:39 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/22 13:10:14 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,7 @@ size_t	rd_loop(char *line)
 	i = 0;
 	while (is_rd(line[i]))
 		i++;
-	if (i > 0)
-		i--;
+	/* i--; 이 부분을 제거 - 실제 토큰 길이를 반환해야 함 */
 	return (i);
 }
 
@@ -70,20 +69,25 @@ size_t	defloop(char *line)
 	i = 0;
 	while (!is_whitespace(line[i]) && line[i])
 	{
-		if (line[i] == 39)
-			i += handle_sq(&line[i + 1]);
-		if (line[i] == 34)
-			i += handle_dq(&line[i + 1]);
-		if (is_rd(line[i]))
-			break ;
-		if (line[i] == '$')
+		if (line[i] == 39)  /* 단일 따옴표 */
 		{
-			i += handle_dollar(&line[i + 1]);
-			break ;
+			i += handle_sq(&line[i]);
 		}
-		i++;
+		else if (line[i] == 34)  /* 이중 따옴표 */
+		{
+			i += handle_dq(&line[i]);
+		}
+		else if (is_rd(line[i]) || line[i] == '|')
+			break;
+		else if (line[i] == ')
+		{
+			i++;
+			i += handle_dollar(&line[i]);
+			break;
+		}
+		else
+			i++;
 	}
-	if (i > 0)
-		i--;
 	return (i);
 }
+	

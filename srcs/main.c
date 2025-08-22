@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 17:21:20 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 11:52:26 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 13:09:05 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,52 +32,6 @@ void	setup_signals(void)
 	sa.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa, NULL);
 	signal(SIGQUIT, SIG_IGN);
-}
-
-/* 실제 환경 변수를 복사하여 링크드 리스트로 만듦 */
-t_env	*env_init(char **envp)
-{
-	t_env	*head;
-	t_env	*current;
-	t_env	*new;
-	int		i;
-	char	*equal_pos;
-
-	head = NULL;
-	current = NULL;
-	i = 0;
-	while (envp && envp[i])
-	{
-		new = (t_env *)malloc(sizeof(t_env));
-		if (!new)
-			return (free_env_list(&head), NULL);
-		equal_pos = ft_strchr(envp[i], '=');
-		if (equal_pos)
-		{
-			new->name = ft_substr(envp[i], 0, equal_pos - envp[i]);
-			new->value = ft_strdup(equal_pos + 1);
-		}
-		else
-		{
-			new->name = ft_strdup(envp[i]);
-			new->value = ft_strdup("");
-		}
-		new->next = NULL;
-		if (!new->name || !new->value)
-		{
-			free(new->name);
-			free(new->value);
-			free(new);
-			return (free_env_list(&head), NULL);
-		}
-		if (!head)
-			head = new;
-		else
-			current->next = new;
-		current = new;
-		i++;
-	}
-	return (head);
 }
 
 void	cleanup_shell(t_shell *sh)
@@ -112,6 +66,20 @@ static void	process_line(t_shell *sh, char *line)
 		free_sh_tokens(&sh->tokens);
 		return ;
 	}
+	
+	/* 디버그 출력 (테스트용) */
+	if (sh->commands && sh->commands->args)
+	{
+		int j = 0;
+		printf("[DEBUG] Command: ");
+		while (sh->commands->args[j])
+		{
+			printf("args[%d]='%s' ", j, sh->commands->args[j]);
+			j++;
+		}
+		printf("\n");
+	}
+	
 	/* 실제 실행 함수 호출 */
 	sh->last_exit = execute_commands(sh);
 	free_sh_tokens(&sh->tokens);
@@ -135,7 +103,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	ft_memset(&sh, 0, sizeof(t_shell));
-	sh.envs = env_init(envp);
+	sh.envs = env_init(envp);  /* env_utils.c의 함수 사용 */
 	if (!sh.envs)
 	{
 		ft_putstr_fd("minishell: failed to initialize environment\n", 2);
