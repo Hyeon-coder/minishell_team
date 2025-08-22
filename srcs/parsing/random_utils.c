@@ -6,19 +6,19 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 21:11:44 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 20:06:05 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:26:30 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	setenv_type(t_token *t)
-{
-	if (!ft_strncmp("$?", t->str, 2))
-		t->type = LSIG;
-	else
-		t->type = EV;
-}
+// void	setenv_type(t_token *t)
+// {
+// 	if (!ft_strncmp("$?", t->str, 2))
+// 		t->type = LSIG;
+// 	else
+// 		t->type = EV;
+// }
 
 size_t	handle_sq(char *line)
 {

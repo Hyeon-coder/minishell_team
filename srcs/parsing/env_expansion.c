@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 20:07:00 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:22:52 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,9 @@ char	*joiner(char *arg, char *env, char *res, char *name)
 	result = ft_strjoin(before_var, env);
 	if (result)
 	{
-		char *temp = result;
+		char	*temp;
+		
+		temp = result;
 		result = ft_strjoin(temp, after_var);
 		free(temp);
 	}
@@ -124,6 +126,8 @@ char	*env_parse_handler(char *str, char *name, t_shell *shell, bool got_envs)
 	char	*env_value;
 	char	*result;
 
+	if (!str)
+		return (NULL);
 	if (!got_envs)
 	{
 		env_value = parse_env(str, name, shell, got_envs);

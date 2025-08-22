@@ -3,40 +3,42 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ljh3900 <ljh3900@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 01:13:41 by ljh3900           #+#    #+#             */
-/*   Updated: 2025/06/08 07:40:01 by ljh3900          ###   ########.fr       */
+/*   Updated: 2025/08/22 20:32:57 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-static void parse_arg(const char *arg, char **out_name, char **out_value)
+static void	parse_arg(const char *arg, char **out_name, char **out_value)
 {
 	char	*eq;
 
 	eq = ft_strchr(arg, '=');
 	if (eq)
 	{
-		*out_name  = ft_strndup(arg, eq - arg);
+		*out_name = ft_strndup(arg, eq - arg);
 		*out_value = ft_strdup(eq + 1);
 	}
 	else
 	{
-		*out_name  = ft_strdup(arg);
+		*out_name = ft_strdup(arg);
 		*out_value = ft_strdup("");
 	}
 }
 
-static int handle_single_export(char *name, char *value, t_env **env_list)
+static int	handle_single_export(char *name, char *value, t_env **env_list)
 {
 	t_env	*node;
 
 	if (!is_valid_name(name))
 	{
 		err_with_cmd("export: '", name, "': not a valid identifier\n");
-		return (export_cleanup(name, value, NULL, 0));
+		free(name);
+		free(value);
+		return (1);
 	}
 	node = env_find(*env_list, name);
 	if (node)
@@ -49,16 +51,27 @@ static int handle_single_export(char *name, char *value, t_env **env_list)
 	{
 		node = env_new(name, value);
 		if (!node)
-			return export_cleanup(name, value, NULL, 1);
-		if (!env_add_back(env_list, node))
-			return export_cleanup(name, value, node, 1);
+		{
+			free(name);
+			free(value);
+			return (1);
+		}
+		if (env_add_back(env_list, node) != 0)
+		{
+			free(node->name);
+			free(node->value);
+			free(node);
+			free(name);
+			free(value);
+			return (1);
+		}
 		free(name);
 		free(value);
 	}
 	return (0);
 }
 
-int ft_export(char **argv, t_env **env_list)
+int	ft_export(char **argv, t_env **env_list)
 {
 	int		i;
 	char	*name;

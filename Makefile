@@ -6,7 +6,7 @@
 #    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/29 15:00:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/08/22 16:04:46 by juhyeonl         ###   ########.fr        #
+#    Updated: 2025/08/22 20:34:57 by juhyeonl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,8 @@ SRCS = srcs/main.c \
 	srcs/missing_functions.c \
 	srcs/missing_functions_2.c \
 	srcs/missing_functions_3.c \
+	srcs/missing_functions_complete.c \
+	srcs/debug_env_functions.c \
 	srcs/execute/exe_utils_dir/env_utils.c \
 	srcs/execute/exe_utils_dir/execute_utils.c \
 	srcs/execute/builtin/ft_cd.c \

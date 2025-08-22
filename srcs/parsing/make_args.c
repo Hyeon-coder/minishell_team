@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 16:39:50 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:23:04 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,27 +17,28 @@ void	set_com_type(char *str, t_com *token)
 	token->type = WORD;
 	if (!ft_strcmp("echo", str))
 		token->type = ECHO;
-	if (!ft_strcmp("pwd", str))
+	else if (!ft_strcmp("pwd", str))
 		token->type = PWD;
-	if (!ft_strcmp("exit", str))
+	else if (!ft_strcmp("exit", str))
 		token->type = EXIT;
-	if (!ft_strcmp("|", str))
+	else if (!ft_strcmp("|", str))
 		token->type = PIPE;
-	if (!ft_strcmp("unset", str))
+	else if (!ft_strcmp("unset", str))
 		token->type = UNSET;
-	if (!ft_strcmp("export", str))
+	else if (!ft_strcmp("export", str))
 		token->type = EXPORT;
-	if (!ft_strcmp("-n", str))
+	else if (!ft_strcmp("-n", str))
 		token->type = N;
-	if (!ft_strcmp(">", str))
+	else if (!ft_strcmp(">", str))
 		token->type = RD_O;
-	if (!ft_strcmp(">>", str))
+	else if (!ft_strcmp(">>", str))
 		token->type = RD_O_APPEND;
-	if (!ft_strcmp("<", str))
+	else if (!ft_strcmp("<", str))
 		token->type = RD_I;
-	if (!ft_strcmp("<<", str))
+	else if (!ft_strcmp("<<", str))
 		token->type = HERE_DOC;
-	com_path_setter(str, token);
+	else
+		com_path_setter(str, token);
 }
 
 size_t	arg_mover(char *str)
@@ -59,6 +60,8 @@ char	*make_arg(char *str, t_shell *shell)
 	char	*name;
 	bool	got_envs;
 
+	if (!str)
+		return (NULL);
 	got_envs = false;
 	i = 0;
 	arg = NULL;
@@ -108,12 +111,21 @@ char	**args_creation_loop(t_token **tokens, char **args,
 			if (current->sq)
 				args[i] = custom_dup(current->str);
 			else
+			{
 				args[i] = make_arg(current->str, shell);
+				if (!args[i])
+				{
+					printf("[DEBUG] make_arg returned NULL for '%s'\n", 
+						current->str);
+					args[i] = custom_dup("");
+				}
+			}
 			if (!args[i])
 			{
 				free_args(args);
 				return (NULL);
 			}
+			printf("[DEBUG] Command: args[%zu]='%s' \n", i, args[i]);
 			i++;
 		}
 		current = current->next;

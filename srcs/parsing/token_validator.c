@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:56:42 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 20:14:19 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:22:17 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,56 +42,55 @@ bool	is_pipe_or_rd(t_token *token)
 		return (false);
 	if (token->type == HERE_DOC)
 		return (true);
-	if (!ft_strcmp(token->str, "|")|| !ft_strcmp(token->str, ">>"))
+	if (token->type == PIPE)
 		return (true);
-	if (!ft_strcmp(token->str, "<")|| !ft_strcmp(token->str, ">"))
+	if (token->type == RD_O || token->type == RD_O_APPEND)
+		return (true);
+	if (token->type == RD_I)
 		return (true);
 	return (false);
 }
 
 bool	is_token_valid(t_token *token)
 {
-	bool	not_present;
-
-	not_present = true;
+	if (!token)
+		return (false);
 	if (is_pipe_or_rd(token) && is_pipe_or_rd(token->next))
-		not_present = false;
+		return (false);
 	if (is_pipe_or_rd(token) && !token->next)
-		not_present = false;
-	if (token->type == HERE_DOC && !token->next)
-		not_present = false;
+		return (false);
+	if (token->type == PIPE && !token->prev)
+		return (false);
 	if (!token->sq && !token->dq)
 	{	
-		if (is_pipe_or_rd(token) && !token->prev && token->type != HERE_DOC)
-			not_present = false;
+		if (does_contain_meta(token) && token->type == WORD)
+			return (false);
 	}
-	if (does_contain_meta(token) && token->type == WORD)
-		not_present = false;
-	return (not_present);
+	return (true);
 }
 
 bool	token_validator(t_token **tokens, t_shell *shell)
 {
 	t_token	*token;
-	bool	not_present;
+	bool	valid;
 
 	if (!tokens || !*tokens)
 		return (false);
 	token = *tokens;
-	not_present = true;
-	while (token && not_present)
+	valid = true;
+	while (token && valid)
 	{
-		not_present = is_token_valid(token);
-		if (!not_present)
+		valid = is_token_valid(token);
+		if (!valid)
 			break ;
 		token = token->next;
 	}
-	if (!not_present)
+	if (!valid)
 	{
 		write_syntax_error("minishell: syntax error near unexpected token ",
 			shell);
 	}
-	return (not_present);
+	return (valid);
 }
 
 size_t	increment_index(char *line)
@@ -103,9 +102,9 @@ size_t	increment_index(char *line)
 		return (i);
 	if (line[i] == '|')
 		return (1);
-	if (line[i] == 39)  /* 단일 따옴표 */
+	if (line[i] == 39)
 		return (handle_sq(line));
-	if (line[i] == 34)  /* 이중 따옴표 */
+	if (line[i] == 34)
 		return (handle_dq(line));
 	if (is_rd(line[i]))
 		i += rd_loop(&line[i]);

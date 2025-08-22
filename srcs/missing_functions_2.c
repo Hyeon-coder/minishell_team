@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 14:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 16:05:58 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:27:25 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ bool	is_whitespace(char c)
 }
 
 /* 구분자 확인 */
-bool	is_separator(char c)
-{
-	return (c == ' ' || is_whitespace(c) || is_meta(c) || c == '\0');
-}
+// bool	is_separator(char c)
+// {
+// 	return (c == ' ' || is_whitespace(c) || is_meta(c) || c == '\0');
+// }

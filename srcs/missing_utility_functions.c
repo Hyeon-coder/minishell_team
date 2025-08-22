@@ -12,13 +12,31 @@
 
 #include "../../includes/minishell.h"
 
-/* 구분자 확인 (make_args.c에서 사용) */
+char	*ft_strndup(const char *s, size_t n)
+{
+	char	*dup;
+	size_t	i;
+
+	if (!s)
+		return (NULL);
+	dup = (char *)malloc((n + 1) * sizeof(char));
+	if (!dup)
+		return (NULL);
+	i = 0;
+	while (i < n && s[i])
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
+
 bool	is_separator(char c)
 {
 	return (c == ' ' || is_whitespace(c) || is_meta(c) || c == '\0');
 }
 
-/* 2D 배열 메모리 해제 */
 void	ft_free_2d_array(char **arr)
 {
 	int	i;
@@ -34,7 +52,6 @@ void	ft_free_2d_array(char **arr)
 	free(arr);
 }
 
-/* 에러 메시지 출력 */
 void	err_with_cmd(char *prefix, char *cmd, char *suffix)
 {
 	if (prefix)
@@ -45,16 +62,13 @@ void	err_with_cmd(char *prefix, char *cmd, char *suffix)
 		ft_putstr_fd(suffix, 2);
 }
 
-/* 경로 해결 (기본 구현) */
 char	*resolve_path(char *path, t_env *env_list, int *alloc_flag)
 {
 	t_env	*home;
 
 	*alloc_flag = 0;
-	
 	if (!path)
 	{
-		/* HOME 디렉토리로 이동 */
 		home = env_find(env_list, "HOME");
 		if (home && home->value)
 		{
@@ -63,24 +77,17 @@ char	*resolve_path(char *path, t_env *env_list, int *alloc_flag)
 		}
 		return (NULL);
 	}
-	
-	/* 절대경로나 상대경로 그대로 사용 */
 	return (path);
 }
 
-/* 환경변수 이름 유효성 검사 */
 int	is_valid_name(const char *name)
 {
 	int	i;
 
 	if (!name || !name[0])
 		return (0);
-	
-	/* 첫 문자는 알파벳 또는 _ */
 	if (!ft_isalpha(name[0]) && name[0] != '_')
 		return (0);
-	
-	/* 나머지는 알파벳, 숫자, _ */
 	i = 1;
 	while (name[i])
 	{
@@ -91,7 +98,6 @@ int	is_valid_name(const char *name)
 	return (1);
 }
 
-/* export 정리 함수 */
 int	export_cleanup(char *name, char *value, t_env *node, int exit_code)
 {
 	if (name)
@@ -99,11 +105,16 @@ int	export_cleanup(char *name, char *value, t_env *node, int exit_code)
 	if (value)
 		free(value);
 	if (node)
+	{
+		if (node->name)
+			free(node->name);
+		if (node->value)
+			free(node->value);
 		free(node);
+	}
 	return (exit_code);
 }
 
-/* export 목록 출력 */
 void	print_export_list(t_env *env_list)
 {
 	t_env	*current;
@@ -119,82 +130,12 @@ void	print_export_list(t_env *env_list)
 	}
 }
 
-/* n개 문자 복사 */
-char	*ft_strndup(const char *s, size_t n)
+char	*get_env_value(char *name, t_env *env_list)
 {
-	char	*dup;
-	size_t	i;
+	t_env	*node;
 
-	if (!s)
-		return (NULL);
-	dup = malloc(n + 1);
-	if (!dup)
-		return (NULL);
-	i = 0;
-	while (i < n && s[i])
-	{
-		dup[i] = s[i];
-		i++;
-	}
-	dup[i] = '\0';
-	return (dup);
-}
-
-/* PATH에서 명령어 찾기 */
-char	*find_in_path(const char *cmd, t_env *env_list)
-{
-	char	**paths;
-	t_env	*path_env;
-	char	*full_path;
-	char	*tmp;
-	int		i;
-
-	if (!cmd)
-		return (NULL);
-	
-	/* PATH 환경변수 가져오기 */
-	path_env = env_find(env_list, "PATH");
-	if (!path_env || !path_env->value)
-		return (NULL);
-	
-	paths = ft_split(path_env->value, ':');
-	if (!paths)
-		return (NULL);
-	
-	i = 0;
-	while (paths[i])
-	{
-		tmp = ft_strjoin(paths[i], "/");
-		full_path = ft_strjoin(tmp, cmd);
-		free(tmp);
-		
-		if (access(full_path, X_OK) == 0)
-		{
-			ft_free_2d_array(paths);
-			return (full_path);
-		}
-		free(full_path);
-		i++;
-	}
-	
-	ft_free_2d_array(paths);
+	node = env_find(env_list, name);
+	if (node)
+		return (node->value);
 	return (NULL);
-}
-
-/* 명령어 경로 가져오기 */
-char	*get_cmd_path(const char *cmd, t_env *env_list)
-{
-	if (!cmd)
-		return (NULL);
-	
-	/* 절대 경로 또는 상대 경로인 경우 */
-	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, X_OK) == 0)
-			return (ft_strdup(cmd));
-		return (NULL);
-	}
-	
-	/* PATH에서 찾기 */
-	return (find_in_path(cmd, env_list));
 }
