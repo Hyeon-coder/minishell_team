@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   type_setter_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 19:02:06 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/14 19:02:09 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:15:07 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ bool	does_env_exist(t_token *token, t_env **envs)
 		return (true);
 	while (current)
 	{
-		if (ft_strcmp(&token->str[1], current->name))
+		if (ft_strcmp(&token->str[1], current->name) == 0)
 			return (true);
 		current = current->next;
 	}

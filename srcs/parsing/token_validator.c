@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:56:42 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 18:37:30 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:14:19 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ bool	is_pipe_or_rd(t_token *token)
 		return (false);
 	if (token->type == HERE_DOC)
 		return (true);
-	if (ft_strcmp(token->str, "|") == 0 || ft_strcmp(token->str, ">>") == 0)
+	if (!ft_strcmp(token->str, "|")|| !ft_strcmp(token->str, ">>"))
 		return (true);
-	if (ft_strcmp(token->str, "<") == 0 || ft_strcmp(token->str, ">") == 0)
+	if (!ft_strcmp(token->str, "<")|| !ft_strcmp(token->str, ">"))
 		return (true);
 	return (false);
 }

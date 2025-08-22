@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 21:11:44 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 16:07:49 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:06:05 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	setenv_type(t_token *t)
 {
-	if (ft_strncmp("$?", t->str, 2))
+	if (!ft_strncmp("$?", t->str, 2))
 		t->type = LSIG;
 	else
 		t->type = EV;
