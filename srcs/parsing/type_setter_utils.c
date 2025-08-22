@@ -21,11 +21,11 @@ bool	does_env_exist(t_token *token, t_env **envs)
 	if (token->dq || token->sq)
 		return (true);
 	current = *envs;
-	if (ftstrcmp(token->str, "$"))
+	if (ft_strcmp(token->str, "$"))
 		return (true);
 	while (current)
 	{
-		if (ftstrcmp(&token->str[1], current->name))
+		if (ft_strcmp(&token->str[1], current->name))
 			return (true);
 		current = current->next;
 	}
@@ -38,11 +38,11 @@ void	com_path_setter(char *str, t_com *token)
 		return ;
 	if (token->type != WORD)
 		return ;
-	if (ftstrncmp("./", str, 2))
+	if (ft_strncmp("./", str, 2))
 		token->type = PATH;
-	if (ftstrncmp("/", str, 1))
+	if (ft_strncmp("/", str, 1))
 		token->type = PATH;
-	if (ftstrcmp("cd", str))
+	if (ft_strcmp("cd", str))
 		token->type = CD;
 }
 
@@ -52,11 +52,11 @@ void	token_path_setter(char *str, t_token *token)
 		return ;
 	if (token->type != WORD)
 		return ;
-	if (ftstrncmp("./", str, 2))
+	if (ft_strncmp("./", str, 2))
 		token->type = PATH;
-	if (ftstrncmp("/", str, 1))
+	if (ft_strncmp("/", str, 1))
 		token->type = PATH;
-	if (ftstrcmp("cd", str))
+	if (ft_strcmp("cd", str))
 		token->type = CD;
 }
 

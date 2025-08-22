@@ -6,7 +6,7 @@
 #    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/29 15:00:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/08/22 13:04:30 by juhyeonl         ###   ########.fr        #
+#    Updated: 2025/08/22 13:48:54 by juhyeonl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,7 +63,8 @@ SRCS = srcs/main.c \
 	srcs/execute/ext_utils.c \
 	srcs/execute/run_builtin_parent_with_redirs.c \
 	srcs/execute/pipeline.c \
-	srcs/execute/execute_stub.c
+	srcs/execute/execute_stub.c \
+	srcs/execute/apply_redirs.c
 
 OBJS = $(SRCS:%.c=$(OBJDIR)/%.o)
 

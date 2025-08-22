@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 11:54:12 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 13:49:31 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ int	execute_external_command(t_com *cmd, t_shell *sh)
 		/* 자식 프로세스 */
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		run_external(cmd->argv, sh->envs, sh);
+		run_external(cmd->args, sh->envs, sh);
 		exit(127);
 	}
 	

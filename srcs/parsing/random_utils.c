@@ -14,7 +14,7 @@
 
 void	setenv_type(t_token *t)
 {
-	if (ftstrncmp("$?", t->str, 2))
+	if (ft_strncmp("$?", t->str, 2))
 		t->type = LSIG;
 	else
 		t->type = EV;

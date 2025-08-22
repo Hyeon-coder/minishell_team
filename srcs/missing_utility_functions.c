@@ -15,7 +15,7 @@
 /* 구분자 확인 (make_args.c에서 사용) */
 bool	is_separator(char c)
 {
-	return (c == ' || is_whitespace(c) || is_meta(c) || c == '\0');
+	return (c == ' ' || is_whitespace(c) || is_meta(c) || c == '\0');
 }
 
 /* 2D 배열 메모리 해제 */

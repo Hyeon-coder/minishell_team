@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 00:35:58 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 13:19:30 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 13:47:11 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ enum e_token_type
 	ECHO,
 	UNSET,
 	EXIT,
+	PATH,
 	PWD,
 	N,				/* -n option */
 	EV,				/* Environment variable */
@@ -106,7 +107,6 @@ typedef struct s_shell
 extern volatile sig_atomic_t	g_signal;
 
 /* Main Functions */
-void	setup_signals(void);
 t_env	*env_init(char **envp);
 void	cleanup_shell(t_shell *sh);
 
@@ -114,8 +114,16 @@ void	cleanup_shell(t_shell *sh);
 int		execute_commands(t_shell *sh);
 int		execute_external_command(t_com *cmd, t_shell *sh);
 int		setup_redirections(t_com *cmd);
+int		apply_redirs(t_com *cmd, t_shell *sh);  /* 추가된 선언 */
 void	run_external(char **args, t_env *env_list, t_shell *sh);
 char	**env_to_array(t_env *env_list);
+
+/* Signal Functions */
+void	setup_signals(void);
+void	set_child_signals(void);  /* 추가된 선언 */
+
+/* Pipe Utility Functions */
+void	close_pipe_pair(int p[2]);  /* 추가된 선언 */
 
 /* Builtin Functions */
 int		ft_cd(char **args, t_env **env_list);
@@ -192,9 +200,6 @@ void	free_env_list(t_env **envs);
 void	free_split(char **arr);
 
 /* String Utils */
-int		ft_strcmp(const char *s1, const char *s2);
-int		ftstrcmp(const char *s1, const char *s2);
-int		ftstrncmp(const char *s1, const char *s2, size_t n);
 char	*custom_dup(char *str);
 
 /* Error Handling */

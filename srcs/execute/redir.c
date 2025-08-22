@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 11:53:02 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 13:43:26 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,28 +104,27 @@ int	setup_redirections(t_com *cmd)
 
 	if (!cmd)
 		return (0);
-	
-	redir = cmd->redirections;
+    redir = cmd->redirections;
 	while (redir)
 	{
-		if (redir->type == REDIR_IN)
+		if (redir->type == RD_I)
 		{
-			if (handle_input_redir(redir->value) < 0)
+			if (handle_input_redir(redir->str) < 0)
 				return (-1);
 		}
-		else if (redir->type == REDIR_OUT)
+		else if (redir->type == RD_O)
 		{
-			if (handle_output_redir(redir->value, 0) < 0)
+			if (handle_output_redir(redir->str, 0) < 0)
 				return (-1);
 		}
-		else if (redir->type == REDIR_APPEND)
+		else if (redir->type == RD_O_APPEND)
 		{
-			if (handle_output_redir(redir->value, 1) < 0)
+			if (handle_output_redir(redir->str, 1) < 0)
 				return (-1);
 		}
 		else if (redir->type == HERE_DOC)
 		{
-			if (handle_heredoc(redir->value) < 0)
+			if (handle_heredoc(redir->str) < 0)
 				return (-1);
 		}
 		redir = redir->next;

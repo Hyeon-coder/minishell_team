@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:56:42 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 04:20:00 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 13:36:02 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ bool	is_pipe_or_rd(t_token *token)
 		return (false);
 	if (token->type == HERE_DOC)
 		return (true);
-	if (ftstrcmp(token->str, "|") || ftstrcmp(token->str, ">>"))
+	if (ft_strcmp(token->str, "|") || ft_strcmp(token->str, ">>"))
 		return (true);
-	if (ftstrcmp(token->str, "<") || ftstrcmp(token->str, ">"))
+	if (ft_strcmp(token->str, "<") || ft_strcmp(token->str, ">"))
 		return (true);
 	return (false);
 }
@@ -88,8 +88,8 @@ bool	token_validator(t_token **tokens, t_shell *shell)
 	}
 	if (!not_present)
 	{
-		write_syntax_errord("minishell: syntax error near unexpected token ",
-			token->str, shell);
+		write_syntax_error("minishell: syntax error near unexpected token ",
+			shell);
 	}
 	return (not_present);
 }

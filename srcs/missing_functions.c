@@ -27,7 +27,7 @@ void	init_token_vals(t_token *token)
 }
 
 /* 문자열 비교 (ft_strcmp와 동일) */
-int	ftstrcmp(const char *s1, const char *s2)
+int	ft_strcmp(const char *s1, const char *s2)
 {
 	if (!s1 || !s2)
 		return (-1);
@@ -35,7 +35,7 @@ int	ftstrcmp(const char *s1, const char *s2)
 }
 
 /* n개 문자 비교 */
-int	ftstrncmp(const char *s1, const char *s2, size_t n)
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
 	if (!s1 || !s2)
 		return (-1);

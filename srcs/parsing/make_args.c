@@ -15,27 +15,27 @@
 void	set_com_type(char *str, t_com *token)
 {
 	token->type = WORD;
-	if (ftstrcmp("echo", str))
+	if (ft_strcmp("echo", str))
 		token->type = ECHO;
-	if (ftstrcmp("pwd", str))
+	if (ft_strcmp("pwd", str))
 		token->type = PWD;
-	if (ftstrcmp("exit", str))
+	if (ft_strcmp("exit", str))
 		token->type = EXIT;
-	if (ftstrcmp("|", str))
+	if (ft_strcmp("|", str))
 		token->type = PIPE;
-	if (ftstrcmp("unset", str))
+	if (ft_strcmp("unset", str))
 		token->type = UNSET;
-	if (ftstrcmp("export", str))
+	if (ft_strcmp("export", str))
 		token->type = EXPORT;
-	if (ftstrcmp("-n", str))
+	if (ft_strcmp("-n", str))
 		token->type = N;
-	if (ftstrcmp(">", str))
+	if (ft_strcmp(">", str))
 		token->type = RD_O;
-	if (ftstrcmp(">>", str))
+	if (ft_strcmp(">>", str))
 		token->type = RD_O_APPEND;
-	if (ftstrcmp("<", str))
+	if (ft_strcmp("<", str))
 		token->type = RD_I;
-	if (ftstrcmp("<<", str))
+	if (ft_strcmp("<<", str))
 		token->type = HERE_DOC;
 	com_path_setter(str, token);
 }
