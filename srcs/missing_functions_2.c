@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 14:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 20:27:25 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 21:03:42 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,11 @@ bool	is_meta(char c)
 	return (c == '|' || c == '<' || c == '>');
 }
 
-/* 공백 문자 확인 */
-bool	is_whitespace(char c)
-{
-	return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
-}
+// /* 공백 문자 확인 */
+// bool	is_whitespace(char c)
+// {
+// 	return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
+// }
 
 /* 구분자 확인 */
 // bool	is_separator(char c)

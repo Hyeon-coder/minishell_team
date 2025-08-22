@@ -6,7 +6,7 @@
 #    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/29 15:00:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/08/22 20:34:57 by juhyeonl         ###   ########.fr        #
+#    Updated: 2025/08/22 20:54:54 by juhyeonl         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,7 +61,11 @@ SRCS = srcs/main.c \
 	srcs/execute/run_builtin_parent_with_redirs.c \
 	srcs/execute/pipeline.c \
 	srcs/execute/execute_stub.c \
-	srcs/execute/apply_redirs.c
+	srcs/execute/apply_redirs.c \
+	srcs/parsing/missing_functions_fix.c \
+	srcs/parsing/parsing_utils_fix.c \
+	srcs/parsing/validation_quote_fix.c \
+	srcs/parsing/env_init_fix.c
 
 OBJS = $(SRCS:%.c=$(OBJDIR)/%.o)
 

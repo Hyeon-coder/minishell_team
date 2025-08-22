@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:56:42 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/22 20:22:17 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 21:00:31 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,46 +69,46 @@ bool	is_token_valid(t_token *token)
 	return (true);
 }
 
-bool	token_validator(t_token **tokens, t_shell *shell)
-{
-	t_token	*token;
-	bool	valid;
+// bool	token_validator(t_token **tokens, t_shell *shell)
+// {
+// 	t_token	*token;
+// 	bool	valid;
 
-	if (!tokens || !*tokens)
-		return (false);
-	token = *tokens;
-	valid = true;
-	while (token && valid)
-	{
-		valid = is_token_valid(token);
-		if (!valid)
-			break ;
-		token = token->next;
-	}
-	if (!valid)
-	{
-		write_syntax_error("minishell: syntax error near unexpected token ",
-			shell);
-	}
-	return (valid);
-}
+// 	if (!tokens || !*tokens)
+// 		return (false);
+// 	token = *tokens;
+// 	valid = true;
+// 	while (token && valid)
+// 	{
+// 		valid = is_token_valid(token);
+// 		if (!valid)
+// 			break ;
+// 		token = token->next;
+// 	}
+// 	if (!valid)
+// 	{
+// 		write_syntax_error("minishell: syntax error near unexpected token ",
+// 			shell);
+// 	}
+// 	return (valid);
+// }
 
-size_t	increment_index(char *line)
-{
-	size_t	i;
+// size_t	increment_index(char *line)
+// {
+// 	size_t	i;
 
-	i = 0;
-	if (!line)
-		return (i);
-	if (line[i] == '|')
-		return (1);
-	if (line[i] == 39)
-		return (handle_sq(line));
-	if (line[i] == 34)
-		return (handle_dq(line));
-	if (is_rd(line[i]))
-		i += rd_loop(&line[i]);
-	else
-		i += defloop(&line[i]);
-	return (i);
-}
+// 	i = 0;
+// 	if (!line)
+// 		return (i);
+// 	if (line[i] == '|')
+// 		return (1);
+// 	if (line[i] == 39)
+// 		return (handle_sq(line));
+// 	if (line[i] == 34)
+// 		return (handle_dq(line));
+// 	if (is_rd(line[i]))
+// 		i += rd_loop(&line[i]);
+// 	else
+// 		i += defloop(&line[i]);
+// 	return (i);
+// }

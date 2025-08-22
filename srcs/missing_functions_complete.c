@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 14:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 20:25:43 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 21:07:01 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,18 +79,18 @@ void	token_path_setter(char *str, t_token *token)
 		token->type = ENV;
 }
 
-void	com_path_setter(char *str, t_com *com)
-{
-	if (!str || !com)
-		return ;
-	if (com->type != WORD)
-		return ;
-	if (!ft_strncmp("./", str, 2))
-		com->type = PATH;
-	else if (!ft_strncmp("/", str, 1))
-		com->type = PATH;
-	else if (!ft_strcmp("cd", str))
-		com->type = CD;
-	else if (!ft_strcmp("env", str))
-		com->type = ENV;
-}
+// void	com_path_setter(char *str, t_com *com)
+// {
+// 	if (!str || !com)
+// 		return ;
+// 	if (com->type != WORD)
+// 		return ;
+// 	if (!ft_strncmp("./", str, 2))
+// 		com->type = PATH;
+// 	else if (!ft_strncmp("/", str, 1))
+// 		com->type = PATH;
+// 	else if (!ft_strcmp("cd", str))
+// 		com->type = CD;
+// 	else if (!ft_strcmp("env", str))
+// 		com->type = ENV;
+// }

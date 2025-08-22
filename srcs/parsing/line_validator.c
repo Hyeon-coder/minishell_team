@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 00:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/22 12:21:31 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/22 21:01:20 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,19 +73,19 @@ size_t	q_count_handler(char *line, char q)
 	return (count);
 }
 
-bool	line_validator(char *line, t_shell *shell)
-{
-	if (!line || !*line)
-		return (false);
-	if (!check_sq(line))
-	{
-		write_syntax_error("minishell: unclosed single quote", shell);
-		return (false);
-	}
-	if (!check_dq(line))
-	{
-		write_syntax_error("minishell: unclosed double quote", shell);
-		return (false);
-	}
-	return (true);
-}
+// bool	line_validator(char *line, t_shell *shell)
+// {
+// 	if (!line || !*line)
+// 		return (false);
+// 	if (!check_sq(line))
+// 	{
+// 		write_syntax_error("minishell: unclosed single quote", shell);
+// 		return (false);
+// 	}
+// 	if (!check_dq(line))
+// 	{
+// 		write_syntax_error("minishell: unclosed double quote", shell);
+// 		return (false);
+// 	}
+// 	return (true);
+// }
