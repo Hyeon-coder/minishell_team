@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 02:18:27 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:36:51 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,8 @@ static char	*remove_quotes(const char *str, bool sq, bool dq)
 	// 단일 따옴표 제거
 	if (sq && str[0] == '\'' && str[len - 1] == '\'')
 	{
+		if (len == 2)
+			return (ft_strdup(""));
 		result = malloc(len - 1);
 		if (!result)
 			return (NULL);
@@ -112,6 +114,8 @@ static char	*remove_quotes(const char *str, bool sq, bool dq)
 	// 이중 따옴표 제거
 	if (dq && str[0] == '"' && str[len - 1] == '"')
 	{
+		if (len == 2)
+			return (ft_strdup(""));
 		result = malloc(len - 1);
 		if (!result)
 			return (NULL);

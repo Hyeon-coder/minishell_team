@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenization.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:37:54 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 20:37:58 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:35:32 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,18 @@ char	*token_dup(char *line, t_token *token)
 	char	*res;
 	size_t	l;
 
+	if (!line)
+		return (NULL);
+		
 	l = token_len(line, token);
+	if (l == 0)
+		return (ft_strdup(""));
+		
 	res = (char *)malloc((l + 1) * sizeof(char));
 	if (!res)
 		return (NULL);
 	i = 0;
-	while (i < l)
+	while (i < l && line[i])
 	{
 		res[i] = line[i];
 		i++;
@@ -65,7 +71,10 @@ t_token	*make_token(char *line, t_shell *shell)
 {
 	t_token	*token;
 
-	token = (t_token *)malloc(1 * sizeof(t_token));
+	if (!line)
+		return (NULL);
+		
+	token = (t_token *)malloc(sizeof(t_token));
 	if (!token)
 	{
 		print_mem_error("memory allocation failed", shell);
@@ -83,6 +92,8 @@ t_token	*make_token(char *line, t_shell *shell)
 	set_type(token);
 	if (!check_if_exists(token, shell))
 	{
+		if (token->str)
+			free(token->str);
 		free(token);
 		return (NULL);
 	}
@@ -93,6 +104,9 @@ void	add_token(t_token **stack, t_token *new)
 {
 	t_token	*current;
 
+	if (!stack || !new)
+		return ;
+		
 	if (!*stack)
 	{
 		*stack = new;
@@ -112,10 +126,11 @@ t_token	*tokenize(char *line, t_token **stack, t_shell *shell)
 	t_token	*new;
 	size_t	i;
 
-	if (!line_validator(line))
+	if (!line || !*line || !line_validator(line))
 		return (NULL);
-	i = -1;
-	while (line[++i])
+		
+	i = 0;
+	while (line[i])
 	{
 		if (!is_whitespace(line[i]))
 		{
@@ -128,8 +143,15 @@ t_token	*tokenize(char *line, t_token **stack, t_shell *shell)
 			add_token(stack, new);
 			i += increment_index(&line[i]);
 		}
+		else
+		{
+			i++;
+		}
 	}
 	if (!token_validator(stack, shell))
+	{
 		free_sh_tokens(stack);
+		return (NULL);
+	}
 	return (*stack);
 }

@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 21:02:35 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 02:20:38 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:35:57 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ bool	ftstrcmp(char *s1, char *s2)
 
 	i = 0;
 	if (!s1 || !s2)
-		return (0);
+		return (false);
 	while (s1[i] || s2[i])
 	{
 		if (s1[i] != s2[i])
@@ -32,14 +32,21 @@ int	ftstrncmp(char *s1, char *s2, size_t n)
 {
 	size_t	i;
 
+	if (!s1 || !s2 || n == 0)
+		return (0);
+		
 	i = 0;
-	while ((i < n) && (s1[i] && s2[i]))
+	while (i < n && s1[i] && s2[i])
 	{
 		if (s1[i] != s2[i])
-			return (0);
+			return (s1[i] - s2[i]);
 		i++;
 	}
-	return (1);
+	
+	if (i < n)
+		return (s1[i] - s2[i]);
+		
+	return (0);
 }
 
 bool	is_meta(char c)
@@ -78,7 +85,7 @@ char	*custom_dup(char *line)
 	size_t	l;
 
 	if (!line)
-		return (ft_strdup(""));  // NULL 대신 빈 문자열
+		return (ft_strdup(""));
 	
 	l = custom_len(line);
 	if (l == 0)
@@ -89,7 +96,7 @@ char	*custom_dup(char *line)
 		return (NULL);
 	
 	i = 0;
-	while (i < l && line[i])  // 안전성 강화
+	while (i < l && line[i])
 	{
 		res[i] = line[i];
 		i++;
