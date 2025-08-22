@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   arg_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:36:34 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 20:36:36 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:14:10 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,15 @@ t_env	*find_env(char *name, t_env **envs)
 {
 	t_env	*current;
 
-	current = *envs;
-	if (!current)
+	if (!name || !envs || !*envs)
 		return (NULL);
-	while (current->next)
+	current = *envs;
+	while (current)
 	{
-		if (ftstrcmp(name, current->name))
+		if (current->name && ft_strcmp(current->name, name) == 0)
 			return (current);
 		current = current->next;
 	}
-	if (ftstrcmp(name, current->name))
-		return (current);
 	return (NULL);
 }
 

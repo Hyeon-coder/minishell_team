@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/15 18:07:41 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:18:27 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,20 +81,86 @@ char	*make_arg(char *str, t_shell *shell, bool is_dq)
 	return (arg);
 }
 
+static char	*remove_quotes(const char *str, bool sq, bool dq)
+{
+	char	*result;
+	size_t	len;
+	size_t	i;
+	size_t	j;
+
+	if (!str)
+		return (NULL);
+	
+	len = ft_strlen(str);
+	if (len < 2)
+		return (ft_strdup(str));
+	
+	// 단일 따옴표 제거
+	if (sq && str[0] == '\'' && str[len - 1] == '\'')
+	{
+		result = malloc(len - 1);
+		if (!result)
+			return (NULL);
+		i = 1;
+		j = 0;
+		while (i < len - 1)
+			result[j++] = str[i++];
+		result[j] = '\0';
+		return (result);
+	}
+	
+	// 이중 따옴표 제거
+	if (dq && str[0] == '"' && str[len - 1] == '"')
+	{
+		result = malloc(len - 1);
+		if (!result)
+			return (NULL);
+		i = 1;
+		j = 0;
+		while (i < len - 1)
+			result[j++] = str[i++];
+		result[j] = '\0';
+		return (result);
+	}
+	
+	return (ft_strdup(str));
+}
+
+// args_creation_loop 함수 수정
 char	**args_creation_loop(t_token **tokens, char **args,
 	t_shell *shell, size_t ac)
 {
 	size_t	i;
 	t_token	*current;
+	char	*temp;
 
 	i = 0;
 	current = *tokens;
 	while (i < ac)
 	{
 		if (current->sq)
-			args[i] = custom_dup(current->str);
+		{
+			// 단일 따옴표: 환경변수 확장 없이 따옴표만 제거
+			args[i] = remove_quotes(current->str, true, false);
+		}
+		else if (current->dq)
+		{
+			// 이중 따옴표: 환경변수 확장 후 따옴표 제거
+			temp = make_arg(current->str, shell, current->dq);
+			if (!temp)
+			{
+				free_args(args);
+				return (NULL);
+			}
+			args[i] = remove_quotes(temp, false, true);
+			free(temp);
+		}
 		else
+		{
+			// 따옴표 없음: 환경변수 확장만
 			args[i] = make_arg(current->str, shell, current->dq);
+		}
+		
 		if (!args[i])
 		{
 			free_args(args);

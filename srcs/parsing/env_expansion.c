@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_expansion.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:13:10 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 20:13:12 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:16:42 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,22 +104,20 @@ char	*parse_env(char *str, char *name, t_shell *shell, bool got_envs)
 	{
 		env = find_env(name, &shell->envs);
 		if (!env)
-			return (NULL);
-		ret = custom_join(str, env->value, got_envs, name);
+			ret = custom_join(str, "", got_envs, name);
+		else
+			ret = custom_join(str, env->value, got_envs, name);
 	}
-	if (got_envs)
-		free(str);
 	return (ret);
 }
 
-char	*env_parse_handler(char *str, char *name, t_shell *shell, bool
-got_envs)
+char	*env_parse_handler(char *str, char *name, t_shell *shell, bool got_envs)
 {
 	char	*ret;
 
 	if (!name)
 	{
-		if (str)
+		if (got_envs && str)
 			free(str);
 		print_mem_error("memory allocation failed", shell);
 		return (NULL);

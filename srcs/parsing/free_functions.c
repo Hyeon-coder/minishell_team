@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 21:01:14 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/15 18:07:56 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:20:11 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,34 @@
 void	free_args(char **args)
 {
 	size_t	i;
+	
 	if (!args)
-		return ;
-	if (!*args)
 		return ;
 	i = 0;
 	while (args[i])
 	{
 		free(args[i]);
+		args[i] = NULL;  // 추가: NULL 설정으로 double free 방지
+		i++;
+	}
+	free(args);
+}
+
+// 부분 해제 함수 추가
+void	free_args_partial(char **args, size_t count)
+{
+	size_t	i;
+	
+	if (!args)
+		return ;
+	i = 0;
+	while (i < count)
+	{
+		if (args[i])
+		{
+			free(args[i]);
+			args[i] = NULL;
+		}
 		i++;
 	}
 	free(args);

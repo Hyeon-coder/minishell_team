@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   str_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 21:02:35 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 21:02:38 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:20:38 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,13 +78,18 @@ char	*custom_dup(char *line)
 	size_t	l;
 
 	if (!line)
-		return (0);
+		return (ft_strdup(""));  // NULL 대신 빈 문자열
+	
 	l = custom_len(line);
+	if (l == 0)
+		return (ft_strdup(""));
+	
 	res = (char *)malloc((l + 1) * sizeof(char));
 	if (!res)
 		return (NULL);
+	
 	i = 0;
-	while (i < l)
+	while (i < l && line[i])  // 안전성 강화
 	{
 		res[i] = line[i];
 		i++;

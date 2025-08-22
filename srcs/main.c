@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 17:52:51 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/16 01:55:54 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:12:53 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,15 +64,17 @@ int main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	t_shell	sh;
-	t_env *env = (t_env *)malloc(1 * sizeof(t_env *));
+	
 	(void)argc;
 	(void)argv;
-	(void)envp;
-	env->name = "World";
-	env->value = "Hello";
+	sh.envs = env_init(envp);
+	if (!sh.envs)
+	{
+		ft_putendl_fd("minishell: environment initialization failed", 2);
+		return (1);
+	}
 	sh.commands = NULL;
 	sh.tokens = NULL;
-	sh.envs = env;
 	sh.last_exit = 0;
 	setup_signals();
 	while ((line = readline(GRN "minishell> " RESET)))
@@ -82,17 +84,13 @@ int main(int argc, char **argv, char **envp)
 		sh.tokens = tokenize(line, &sh.tokens, &sh);
 		if (sh.tokens && *line)
 			sh.commands = init_coms(&sh.tokens, &sh.commands, &sh);
-		//print_comms(&sh.commands);
 		if (sh.commands)
 			execute(&sh);
-		// printf("[DEBUG] : after execute\n");
 		free_sh_tokens(&sh.tokens);
-		// printf("[DEBUG] : after free_sh_tokens\n");
 		free_coms(&sh.commands);
-		// printf("[DEBUG] : after free_coms\n");
 		free(line);
-		// printf("[DEBUG] : after free\n");
 	}
+	env_clear(&sh.envs);
 	rl_clear_history();
-	return 0;
+	return (0);
 }

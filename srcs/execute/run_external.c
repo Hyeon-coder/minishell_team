@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 17:04:18 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/15 17:08:22 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 02:17:21 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,8 @@ static char	*get_path_value(t_env *env_list)
 {
 	t_env	*node;
 
-	node = find_env("PATH", &env_list);
+	// 기존 find_env 대신 env_find 사용 (일관성)
+	node = env_find(env_list, "PATH");
 	if (node)
 		return (node->value);
 	return (NULL);
