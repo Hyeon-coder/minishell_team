@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 19:36:15 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 05:38:24 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 06:18:28 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ void	fill_in_dir(t_com *new, t_token *d)
 	new->redir_type_in = true;
 }
 
-/* bash와 동일한 다중 리다이렉션 처리 - 마지막 리다이렉션만 유지 */
+/* bash 동작 모방: 첫 번째 리다이렉션만 유지 */
 void	setup_directors(t_com *new, t_token **tokens)
 {
 	t_token	*current;
@@ -174,47 +174,42 @@ void	setup_directors(t_com *new, t_token **tokens)
 	
 	while (current && current->type != PIPE)
 	{
-		/* 입력 리다이렉션 처리 - 마지막 것만 유지 */
+		/* 입력 리다이렉션 처리 - 첫 번째 것만 사용 */
 		if ((current->type == RD_I || current->type == HERE_DOC) && current->next)
 		{
-			/* 기존 infile 해제 */
-			if (new->infile)
-				free(new->infile);
-			
-			clean_filename = remove_quotes_from_filename(current->next->str);
-			if (clean_filename)
-				new->infile = clean_filename;
-			else
-				new->infile = ft_strdup(current->next->str);
-			
-			new->redir_type_in = true;
+			if (!new->infile) /* 아직 설정되지 않은 경우만 */
+			{
+				clean_filename = remove_quotes_from_filename(current->next->str);
+				if (clean_filename)
+					new->infile = clean_filename;
+				else
+					new->infile = ft_strdup(current->next->str);
+				
+				new->redir_type_in = true;
+			}
 			current = current->next; /* 파일명 토큰도 건너뛰기 */
 		}
-		/* 출력 리다이렉션 처리 - 마지막 것만 유지 */
+		/* 출력 리다이렉션 처리 - 첫 번째 것만 사용 */
 		else if ((current->type == RD_O || current->type == RD_O_APPEND) && current->next)
 		{
-			clean_filename = remove_quotes_from_filename(current->next->str);
-			if (!clean_filename)
-				clean_filename = ft_strdup(current->next->str);
-			
-			if (!clean_filename)
+			if (!new->outfile) /* 아직 설정되지 않은 경우만 */
 			{
-				current = current->next;
-				continue;
+				clean_filename = remove_quotes_from_filename(current->next->str);
+				if (!clean_filename)
+					clean_filename = ft_strdup(current->next->str);
+				
+				if (clean_filename)
+				{
+					new->outfile = clean_filename;
+					new->redir_type_out = true;
+					
+					/* append 플래그는 첫 번째 리다이렉션 타입에 따라 결정 */
+					if (current->type == RD_O_APPEND)
+						new->append = true;
+					else
+						new->append = false;
+				}
 			}
-			
-			/* 기존 outfile 해제하고 새로운 것으로 교체 */
-			if (new->outfile)
-				free(new->outfile);
-			new->outfile = clean_filename;
-			new->redir_type_out = true;
-			
-			/* append 플래그는 마지막 리다이렉션 타입에 따라 결정 */
-			if (current->type == RD_O_APPEND)
-				new->append = true;
-			else
-				new->append = false;
-			
 			current = current->next; /* 파일명 토큰도 건너뛰기 */
 		}
 		
