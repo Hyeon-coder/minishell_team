@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 17:52:51 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 02:12:53 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 04:31:22 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ int main(int argc, char **argv, char **envp)
 			sh.commands = init_coms(&sh.tokens, &sh.commands, &sh);
 		if (sh.commands)
 			execute(&sh);
+		print_comms(&sh.commands);
 		free_sh_tokens(&sh.tokens);
 		free_coms(&sh.commands);
 		free(line);

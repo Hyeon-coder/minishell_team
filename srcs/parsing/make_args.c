@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 04:24:08 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 04:29:33 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,36 @@ char	*make_arg(char *str, t_shell *shell, bool is_dq)
 	return (arg);
 }
 
-/* 필요한 최종 크기를 미리 계산하는 함수 - 수정된 버전 */
+/* 단일따옴표로 둘러싸인 토큰의 따옴표만 제거 */
+static char	*remove_single_quotes_only(const char *str)
+{
+	char	*result;
+	size_t	i;
+	size_t	j;
+	size_t	len;
+
+	if (!str)
+		return (ft_strdup(""));
+	
+	len = ft_strlen(str);
+	result = malloc(len + 1);
+	if (!result)
+		return (NULL);
+	
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'')
+			i++; // 단일따옴표 건너뛰기
+		else
+			result[j++] = str[i++];
+	}
+	result[j] = '\0';
+	return (result);
+}
+
+/* 필요한 최종 크기를 미리 계산하는 함수 */
 static size_t	calculate_final_size(const char *str, t_shell *shell)
 {
 	size_t	final_size;
@@ -154,7 +183,7 @@ static size_t	calculate_final_size(const char *str, t_shell *shell)
 			in_double_quote = !in_double_quote;
 			i++; // 따옴표는 최종 결과에 포함되지 않음
 		}
-		else if (str[i] == '$' && !in_single_quote && str[i + 1]) // 핵심 수정: str[i + 1] 조건 복구
+		else if (str[i] == '$' && !in_single_quote && str[i + 1])
 		{
 			char	*var_name;
 			char	*var_value;
@@ -208,7 +237,7 @@ static size_t	calculate_final_size(const char *str, t_shell *shell)
 	return (final_size + 1); // null terminator 포함
 }
 
-/* 개선된 따옴표 제거 및 환경변수 확장 함수 - 완전히 새로 작성된 버전 */
+/* 개선된 따옴표 제거 및 환경변수 확장 함수 */
 static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 {
 	char	*result;
@@ -247,7 +276,7 @@ static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 			in_double_quote = !in_double_quote;
 			i++; // 따옴표 건너뛰기
 		}
-		else if (str[i] == '$' && !in_single_quote && str[i + 1]) // 핵심 수정: str[i + 1] 조건 복구
+		else if (str[i] == '$' && !in_single_quote && str[i + 1])
 		{
 			char	*var_name;
 			char	*var_value;
@@ -343,7 +372,19 @@ char	**args_creation_loop(t_token **tokens, char **args,
 			current = current->next;
 			break;
 		}
-		args[i] = process_quotes_and_expand(current->str, shell);
+
+		/* 핵심 수정: 토큰의 따옴표 플래그를 확인 */
+		if (current->sq && !current->dq)
+		{
+			/* 단일따옴표로만 둘러싸인 경우: 환경변수 확장 안 함 */
+			args[i] = remove_single_quotes_only(current->str);
+		}
+		else
+		{
+			/* 그 외의 경우: 환경변수 확장 및 따옴표 제거 */
+			args[i] = process_quotes_and_expand(current->str, shell);
+		}
+		
 		if (!args[i])
 		{
 			/* 메모리 해제 */
@@ -389,6 +430,5 @@ char	**make_args(t_token **tokens, t_shell *shell)
 		print_mem_error("memory allocation failed", shell);
 		return (NULL);
 	}
-	
 	return (args);
 }
