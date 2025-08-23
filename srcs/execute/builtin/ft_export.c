@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ljh3900 <ljh3900@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 01:13:41 by ljh3900           #+#    #+#             */
-/*   Updated: 2025/06/08 07:40:01 by ljh3900          ###   ########.fr       */
+/*   Updated: 2025/08/23 05:31:31 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static int handle_single_export(char *name, char *value, t_env **env_list)
 	if (!is_valid_name(name))
 	{
 		err_with_cmd("export: '", name, "': not a valid identifier\n");
-		return (export_cleanup(name, value, NULL, 0));
+		return (export_cleanup(name, value, NULL, 1)); /* 에러 시 1 반환 */
 	}
 	node = env_find(*env_list, name);
 	if (node)
@@ -76,7 +76,7 @@ int ft_export(char **argv, t_env **env_list)
 	{
 		parse_arg(argv[i], &name, &value);
 		if (handle_single_export(name, value, env_list))
-			status = 1;
+			status = 1; /* 에러 발생 시 최종 status를 1로 설정 */
 		i++;
 	}
 	return (status);

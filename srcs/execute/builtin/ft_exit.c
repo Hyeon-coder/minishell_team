@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 18:30:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/16 00:34:48 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 05:31:52 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ static void	print_too_many_args(void)
  * Behavior:
  * - No arg           : exit with last status.
  * - One numeric arg  : exit with (unsigned char)arg.
- * - One non-numeric  : print error and exit 255.
+ * - One non-numeric  : print error and exit 2 (bash compatibility).
  * - >=2 args numeric : print error, do not exit, set $?=1.
  * Prints "exit" only when actually terminating the parent shell.
  */
@@ -108,7 +108,7 @@ int	ft_exit_builtin(t_shell *sh, char **argv, int is_parent, int in_pipe)
 		if (is_parent && !in_pipe)
 			ft_putendl_fd("exit", 1);
 		print_numeric_error(argv[1]);
-		exit(255);
+		exit(2); /* bash와 동일한 exit 코드 */
 	}
 	if (ac > 2)
 	{
