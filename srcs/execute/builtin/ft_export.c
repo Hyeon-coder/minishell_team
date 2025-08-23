@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 01:13:41 by ljh3900           #+#    #+#             */
-/*   Updated: 2025/08/23 05:31:31 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 07:13:29 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,11 @@ static int handle_single_export(char *name, char *value, t_env **env_list)
 
 	if (!is_valid_name(name))
 	{
+		/* bash와 동일한 에러 메시지만 출력 - "malloc failed" 제거 */
 		err_with_cmd("export: '", name, "': not a valid identifier\n");
-		return (export_cleanup(name, value, NULL, 1)); /* 에러 시 1 반환 */
+		free(name);
+		free(value);
+		return (1);
 	}
 	node = env_find(*env_list, name);
 	if (node)
@@ -49,9 +52,18 @@ static int handle_single_export(char *name, char *value, t_env **env_list)
 	{
 		node = env_new(name, value);
 		if (!node)
-			return export_cleanup(name, value, NULL, 1);
+		{
+			free(name);
+			free(value);
+			return (1);
+		}
 		if (!env_add_back(env_list, node))
-			return export_cleanup(name, value, node, 1);
+		{
+			free(node->name);
+			free(node->value);
+			free(node);
+			return (1);
+		}
 		free(name);
 		free(value);
 	}
