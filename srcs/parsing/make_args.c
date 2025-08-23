@@ -6,11 +6,48 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 03:45:00 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 04:18:05 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+/* make_args.c 파일 상단에 추가할 함수들 */
+
+/* 환경변수명이 유효한지 확인 */
+static int	is_valid_var_start(char c)
+{
+	return (ft_isalpha(c) || c == '_' || c == '?');
+}
+
+static int	is_valid_var_continue(char c)
+{
+	return (ft_isalnum(c) || c == '_');
+}
+
+/* 유효한 환경변수명의 길이를 계산 (0이면 유효하지 않음) */
+static size_t	get_valid_var_len(const char *str)
+{
+	size_t	len;
+	
+	if (!str || !str[0])
+		return (0);
+	
+	/* 특수 변수 $? */
+	if (str[0] == '?')
+		return (1);
+	
+	/* 첫 글자가 유효하지 않으면 */
+	if (!is_valid_var_start(str[0]))
+		return (0);
+	
+	len = 1;
+	/* 나머지 글자들 검사 */
+	while (str[len] && is_valid_var_continue(str[len]))
+		len++;
+	
+	return (len);
+}
 
 void	set_com_type(char *str, t_com *token)
 {
@@ -119,31 +156,21 @@ static size_t	calculate_final_size(const char *str, t_shell *shell)
 			in_double_quote = !in_double_quote;
 			i++; // 따옴표는 최종 결과에 포함되지 않음
 		}
-		else if (str[i] == '$' && !in_single_quote && str[i + 1])
+		else if (str[i] == '$' && !in_single_quote)  /* 핵심 수정: str[i + 1] 조건 제거 */
 		{
-			/* 환경변수 확장 */
-			char *var_name;
-			char *var_value;
-			size_t var_len;
+			char	*var_name;
+			char	*var_value;
+			size_t	var_len;
 			
-			i++; // '$' 건너뛰기
-			var_len = 0;
+			i++; /* '$' 건너뛰기 */
 			
-			/* 변수명 길이 계산 */
-			if (str[i] == '?')
-			{
-				var_len = 1;
-			}
-			else
-			{
-				while (str[i + var_len] && 
-					  (ft_isalnum(str[i + var_len]) || str[i + var_len] == '_'))
-					var_len++;
-			}
+			/* 유효한 변수명 길이 계산 */
+			var_len = get_valid_var_len(&str[i]);
 			
 			if (var_len == 0)
 			{
-				final_size++; // '$'만 있는 경우
+				/* 유효하지 않은 변수명이면 '$' 하나만 추가 */
+				final_size++;
 				continue;
 			}
 			
@@ -161,7 +188,7 @@ static size_t	calculate_final_size(const char *str, t_shell *shell)
 			else
 			{
 				t_env *env_node = find_env(var_name, &shell->envs);
-				var_value = env_node && env_node->value ? ft_strdup(env_node->value) : ft_strdup("");
+				var_value = (env_node && env_node->value) ? ft_strdup(env_node->value) : ft_strdup("");
 			}
 			
 			free(var_name);
@@ -184,7 +211,7 @@ static size_t	calculate_final_size(const char *str, t_shell *shell)
 }
 
 /* 개선된 따옴표 제거 및 환경변수 확장 함수 */
-static char	*process_quotes_and_expand(const char *str, t_shell *shell, bool expand_vars)
+static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 {
 	char	*result;
 	size_t	i;
@@ -222,32 +249,23 @@ static char	*process_quotes_and_expand(const char *str, t_shell *shell, bool exp
 			in_double_quote = !in_double_quote;
 			i++; // 따옴표 건너뛰기
 		}
-		else if (str[i] == '$' && expand_vars && !in_single_quote && str[i + 1])
+		else if (str[i] == '$' && !in_single_quote)  /* 핵심 수정: 단일따옴표만 체크, str[i + 1] 조건 제거 */
 		{
-			/* 환경변수 확장 */
-			char *var_name;
-			char *var_value;
-			size_t var_len;
-			size_t value_len;
+			char	*var_name;
+			char	*var_value;
+			size_t	var_len;
+			size_t	value_len;
 			
-			i++; // '$' 건너뛰기
-			var_len = 0;
+			i++; /* '$' 건너뛰기 */
 			
-			/* 변수명 길이 계산 */
-			if (str[i] == '?')
-			{
-				var_len = 1;
-			}
-			else
-			{
-				while (str[i + var_len] && 
-					  (ft_isalnum(str[i + var_len]) || str[i + var_len] == '_'))
-					var_len++;
-			}
+			/* 유효한 변수명 길이 계산 */
+			var_len = get_valid_var_len(&str[i]);
 			
 			if (var_len == 0)
 			{
-				result[j++] = '$'; // '$'만 있는 경우
+				/* 유효하지 않은 변수명이면 '$' 그대로 출력 */
+				if (j < final_size - 1)
+					result[j++] = '$';
 				continue;
 			}
 			
@@ -268,7 +286,7 @@ static char	*process_quotes_and_expand(const char *str, t_shell *shell, bool exp
 			else
 			{
 				t_env *env_node = find_env(var_name, &shell->envs);
-				var_value = env_node && env_node->value ? ft_strdup(env_node->value) : ft_strdup("");
+				var_value = (env_node && env_node->value) ? ft_strdup(env_node->value) : ft_strdup("");
 			}
 			
 			free(var_name);
@@ -330,11 +348,7 @@ char	**args_creation_loop(t_token **tokens, char **args,
 			current = current->next;
 			break;
 		}
-		
-		/* 단일 따옴표가 있으면 환경변수 확장하지 않음 */
-		bool expand_vars = !current->sq;
-		
-		args[i] = process_quotes_and_expand(current->str, shell, expand_vars);
+		args[i] = process_quotes_and_expand(current->str, shell);
 		if (!args[i])
 		{
 			/* 메모리 해제 */
