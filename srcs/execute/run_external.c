@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 17:04:18 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/23 05:43:08 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 06:39:26 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,8 @@ static int	check_file_executable(const char *path, char **error_msg)
 
 	if (stat(path, &st) != 0)
 	{
-		if (access(path, F_OK) == 0)
-		{
-			*error_msg = ": Permission denied\n";
-			return (126);
-		}
-		else
-		{
-			*error_msg = ": No such file or directory\n";
-			return (127);
-		}
+		*error_msg = ": No such file or directory\n";
+		return (127);
 	}
 	
 	if (S_ISDIR(st.st_mode))
@@ -44,8 +36,8 @@ static int	check_file_executable(const char *path, char **error_msg)
 	}
 	
 	/* 실행 가능하지만 execve가 실패한 경우 */
-	*error_msg = ": command not found\n";
-	return (127);
+	*error_msg = ": Exec format error\n";
+	return (126);
 }
 
 /* Build a NULL-terminated "KEY=VAL" array from env list */

@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 17:52:51 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 06:10:51 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 06:33:19 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ void	print_comms(t_com **coms)
 
 }
 
+/* main.c에서 PROMPT 환경변수 설정 부분 제거 */
+
 int main(int argc, char **argv, char **envp)
 {
 	char	*line;
@@ -93,8 +95,8 @@ int main(int argc, char **argv, char **envp)
 	sh.tokens = NULL;
 	sh.last_exit = 0;
 	
-	/* PROMPT 환경변수 설정 */
-	setup_prompt_env(&sh);
+	/* PROMPT 환경변수 설정 제거 - bash와 동일하게 */
+	// setup_prompt_env(&sh); <- 이 부분 제거
 	
 	setup_signals();
 	while ((line = readline(GRN "minishell> " RESET)))
@@ -106,7 +108,6 @@ int main(int argc, char **argv, char **envp)
 			sh.commands = init_coms(&sh.tokens, &sh.commands, &sh);
 		if (sh.commands)
 			execute(&sh);
-		// print_comms(&sh.commands);
 		free_sh_tokens(&sh.tokens);
 		free_coms(&sh.commands);
 		free(line);

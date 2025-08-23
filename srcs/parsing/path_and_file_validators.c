@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 18:20:36 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 02:19:23 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 06:38:14 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,36 @@
 bool	is_valid_dir(char *path, t_shell *shell)
 {
 	DIR	*dir;
+	struct stat st;
 
+	/* 경로가 존재하지 않는 경우 */
+	if (stat(path, &st) != 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		shell->last_exit = 127;
+		return (false);
+	}
+	
+	/* 파일이지만 디렉토리가 아닌 경우 */
+	if (!S_ISDIR(st.st_mode))
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": Not a directory\n", 2);
+		shell->last_exit = 126;
+		return (false);
+	}
+	
+	/* 실제로 열어보기 */
 	dir = opendir(path);
 	if (!dir)
 	{
-		write_syntax_error("invalid directory", shell);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": Permission denied\n", 2);
+		shell->last_exit = 126;
 		return (false);
 	}
 	closedir(dir);
@@ -113,9 +138,20 @@ bool	is_valid_output_file(const char *filename, t_shell *shell)
 bool	is_valid_file(t_token *token, t_shell *shell)
 {
 	if (!token || !token->str)
+	{
+		shell->last_exit = 1;
 		return (false);
+	}
 	
-	// 이전 토큰을 확인해서 입력/출력 파일인지 판단
+	/* 빈 파일명 체크 */
+	if (token->str[0] == '\0')
+	{
+		ft_putstr_fd("minishell: : No such file or directory\n", 2);
+		shell->last_exit = 1;
+		return (false);
+	}
+	
+	/* 이전 토큰을 확인해서 입력/출력 파일인지 판단 */
 	if (token->prev)
 	{
 		if (token->prev->type == RD_I || token->prev->type == HERE_DOC)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_validator.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhurtamo <mhurtamo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:56:42 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/07 20:56:45 by mhurtamo         ###   ########.fr       */
+/*   Updated: 2025/08/23 06:37:25 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ bool	token_validator(t_token **tokens, t_shell *shell)
 	not_present = true;
 	while (token && not_present)
 	{
+		/* 기존 검증들 - 그대로 유지 */
 		if (is_pipe_or_rd(token) && is_pipe_or_rd(token->next))
 			not_present = false;
 		if (is_pipe_or_rd(token) && !token->next)
@@ -83,6 +84,20 @@ bool	token_validator(t_token **tokens, t_shell *shell)
 			not_present = false;
 		if (does_contain_meta(token) && token->type == WORD)
 			not_present = false;
+		
+		/* 🆕 추가 검증: 리다이렉션 후 빈 파일명 체크 */
+		if ((token->type == RD_I || token->type == RD_O || 
+		     token->type == RD_O_APPEND || token->type == HERE_DOC) && 
+		    token->next && token->next->str && token->next->str[0] == '\0')
+			not_present = false;
+			
+		/* 🆕 추가 검증: 파일명이 리다이렉션 연산자인 경우 */
+		if (token->prev && 
+		    (token->prev->type == RD_I || token->prev->type == RD_O ||
+		     token->prev->type == RD_O_APPEND || token->prev->type == HERE_DOC) &&
+		    is_pipe_or_rd(token))
+			not_present = false;
+			
 		token = token->next;
 	}
 	if (!not_present)
