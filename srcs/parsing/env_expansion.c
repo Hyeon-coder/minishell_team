@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:13:10 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 03:04:56 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 03:17:18 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ char	*joiner(char *arg, char *env, char *res, char *name)
 	{
 		if (arg[i] == '$' && !detected && 
 		    ft_strncmp(&arg[i + 1], name, name_len) == 0 &&
-		    (i + 1 + name_len >= ft_strlen(arg) && 
-		     !ft_isalnum(arg[i + 1 + name_len]) && arg[i + 1 + name_len] != '_'))
+		    (i + 1 + name_len >= ft_strlen(arg) || 
+		     (!ft_isalnum(arg[i + 1 + name_len]) && arg[i + 1 + name_len] != '_')))
 		{
 			detected = true;
 			j += move_env(&res[j], env);

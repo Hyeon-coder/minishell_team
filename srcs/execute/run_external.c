@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 17:04:18 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/23 02:17:21 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 03:19:57 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,14 +142,14 @@ void	run_external(char **argv, t_env *env_list, t_shell *sh)
 	if (has_slash(argv[0]))
 	{
 		try_exec(argv[0], argv, envp);
-		err_with_cmd(NULL, (char *)argv[0], ": command not found");
+		err_with_cmd(NULL, (char *)argv[0], ": command not found\n");
 		ft_free_2d_array(envp);
 		return ;
 	}
 	pathvar = get_path_value(env_list);
 	paths = split_paths(pathvar);
 	if (try_exec_in_paths(argv, paths, envp) < 0)
-		err_with_cmd(NULL, (char *)argv[0], ": command not found");
+		err_with_cmd(NULL, (char *)argv[0], ": command not found\n");
 	ft_free_2d_array(envp);
 	ft_free_2d_array(paths);
 }
