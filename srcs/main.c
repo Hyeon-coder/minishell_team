@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 17:52:51 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 04:39:45 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 06:10:51 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,22 @@ void setup_signals(void)
 	sa.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa, NULL);
 	signal(SIGQUIT, SIG_IGN);
+}
+
+/* PROMPT 환경변수 설정 */
+static void	setup_prompt_env(t_shell *sh)
+{
+	t_env	*prompt_node;
+
+	/* PROMPT 환경변수가 이미 있는지 확인 */
+	prompt_node = env_find(sh->envs, "PROMPT");
+	if (!prompt_node)
+	{
+		/* PROMPT 환경변수 추가 */
+		prompt_node = env_new("PROMPT", "minishell>");
+		if (prompt_node)
+			env_add_back(&sh->envs, prompt_node);
+	}
 }
 
 void	print_comms(t_com **coms)
@@ -76,6 +92,10 @@ int main(int argc, char **argv, char **envp)
 	sh.commands = NULL;
 	sh.tokens = NULL;
 	sh.last_exit = 0;
+	
+	/* PROMPT 환경변수 설정 */
+	setup_prompt_env(&sh);
+	
 	setup_signals();
 	while ((line = readline(GRN "minishell> " RESET)))
 	{
