@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 19:36:15 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 02:36:05 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 03:00:15 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,32 @@
 
 size_t	count_args(t_token **tokens)
 {
-	size_t	i;
+	size_t	count;
 	t_token	*current;
 
 	if (!tokens || !*tokens)
 		return (0);
 		
 	current = *tokens;
-	i = 1;
-	while (current->next && current->next->type != PIPE)
+	count = 0;
+	
+	while (current && current->type != PIPE)
 	{
-		i++;
-		current = current->next;
+		/* 리디렉션 토큰과 그 다음 파일명은 인자에서 제외 */
+		if (current->type == RD_I || current->type == RD_O || 
+		    current->type == RD_O_APPEND || current->type == HERE_DOC)
+		{
+			current = current->next; // 리디렉션 토큰 건너뛰기
+			if (current)             // 파일명 토큰 건너뛰기
+				current = current->next;
+		}
+		else
+		{
+			count++;
+			current = current->next;
+		}
 	}
-	return (i);
+	return (count);
 }
 
 size_t	count_coms(t_token **tokens)
@@ -40,7 +52,7 @@ size_t	count_coms(t_token **tokens)
 		
 	res = 1;
 	current = *tokens;
-	while (current->next)
+	while (current)
 	{
 		if (current->type == PIPE)
 			res++;

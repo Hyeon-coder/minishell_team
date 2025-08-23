@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 02:36:51 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 03:00:03 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,12 +60,20 @@ char	*make_arg(char *str, t_shell *shell, bool is_dq)
 	bool	got_envs;
 
 	got_envs = false;
-	i = -1;
-	while (str[++i])
+	i = 0;
+	arg = NULL;
+	
+	if (!str)
+		return (ft_strdup(""));
+	
+	while (str[i])
 	{
-		if (str[i] == '$')
+		if (str[i] == '$' && str[i + 1])
 		{
 			name = make_name(&str[i + 1], is_dq);
+			if (!name)
+				return (got_envs ? free(arg), NULL : NULL);
+			
 			if (!got_envs)
 				arg = env_parse_handler(str, name, shell, got_envs);
 			else
@@ -75,104 +83,194 @@ char	*make_arg(char *str, t_shell *shell, bool is_dq)
 				return (NULL);
 			i += arg_mover(&str[i]);
 		}
+		else
+			i++;
 	}
 	if (!got_envs)
-		arg = custom_dup(str);
+		arg = ft_strdup(str);
 	return (arg);
 }
 
-static char	*remove_quotes(const char *str, bool sq, bool dq)
+/* 개선된 따옴표 제거 함수 - 모든 따옴표를 제거 */
+static char	*process_quotes_and_expand(const char *str, t_shell *shell, bool expand_vars)
 {
 	char	*result;
-	size_t	len;
 	size_t	i;
 	size_t	j;
+	size_t	len;
+	bool	in_single_quote;
+	bool	in_double_quote;
+	char	*expanded;
 
 	if (!str)
-		return (NULL);
+		return (ft_strdup(""));
 	
 	len = ft_strlen(str);
-	if (len < 2)
-		return (ft_strdup(str));
+	result = malloc(len + 1);
+	if (!result)
+		return (NULL);
 	
-	// 단일 따옴표 제거
-	if (sq && str[0] == '\'' && str[len - 1] == '\'')
+	i = 0;
+	j = 0;
+	in_single_quote = false;
+	in_double_quote = false;
+	
+	while (i < len)
 	{
-		if (len == 2)
-			return (ft_strdup(""));
-		result = malloc(len - 1);
-		if (!result)
-			return (NULL);
-		i = 1;
-		j = 0;
-		while (i < len - 1)
+		if (str[i] == '\'' && !in_double_quote)
+		{
+			in_single_quote = !in_single_quote;
+			i++; // 따옴표 건너뛰기
+		}
+		else if (str[i] == '"' && !in_single_quote)
+		{
+			in_double_quote = !in_double_quote;
+			i++; // 따옴표 건너뛰기
+		}
+		else if (str[i] == '$' && expand_vars && !in_single_quote && str[i + 1])
+		{
+			/* 환경변수 확장 */
+			char *var_name;
+			char *var_value;
+			size_t var_len;
+			size_t value_len;
+			
+			i++; // '$' 건너뛰기
+			var_len = 0;
+			
+			/* 변수명 길이 계산 */
+			if (str[i] == '?')
+			{
+				var_len = 1;
+			}
+			else
+			{
+				while (str[i + var_len] && 
+					  (ft_isalnum(str[i + var_len]) || str[i + var_len] == '_'))
+					var_len++;
+			}
+			
+			if (var_len == 0)
+			{
+				result[j++] = '$'; // '$'만 있는 경우
+				continue;
+			}
+			
+			/* 변수명 추출 */
+			var_name = malloc(var_len + 1);
+			if (!var_name)
+			{
+				free(result);
+				return (NULL);
+			}
+			ft_strlcpy(var_name, &str[i], var_len + 1);
+			
+			/* 환경변수 값 가져오기 */
+			if (ft_strcmp(var_name, "?") == 0)
+			{
+				var_value = get_sig_val(shell->last_exit);
+			}
+			else
+			{
+				t_env *env_node = find_env(var_name, &shell->envs);
+				var_value = env_node && env_node->value ? ft_strdup(env_node->value) : ft_strdup("");
+			}
+			
+			free(var_name);
+			if (!var_value)
+			{
+				free(result);
+				return (NULL);
+			}
+			
+			/* 결과 버퍼 확장 */
+			value_len = ft_strlen(var_value);
+			if (j + value_len >= len)
+			{
+				len = len * 2 + value_len;
+				result = ft_realloc(result, j, len + 1);
+				if (!result)
+				{
+					free(var_value);
+					return (NULL);
+				}
+			}
+			
+			/* 환경변수 값 복사 */
+			ft_strlcpy(&result[j], var_value, value_len + 1);
+			j += value_len;
+			i += var_len;
+			
+			free(var_value);
+		}
+		else
+		{
 			result[j++] = str[i++];
-		result[j] = '\0';
-		return (result);
+		}
 	}
 	
-	// 이중 따옴표 제거
-	if (dq && str[0] == '"' && str[len - 1] == '"')
+	result[j] = '\0';
+	
+	/* 메모리 최적화 */
+	if (j < len)
 	{
-		if (len == 2)
-			return (ft_strdup(""));
-		result = malloc(len - 1);
-		if (!result)
-			return (NULL);
-		i = 1;
-		j = 0;
-		while (i < len - 1)
-			result[j++] = str[i++];
-		result[j] = '\0';
-		return (result);
+		expanded = ft_realloc(result, len + 1, j + 1);
+		if (expanded)
+			result = expanded;
 	}
 	
-	return (ft_strdup(str));
+	return (result);
 }
 
-// args_creation_loop 함수 수정
 char	**args_creation_loop(t_token **tokens, char **args,
 	t_shell *shell, size_t ac)
 {
 	size_t	i;
 	t_token	*current;
-	char	*temp;
 
 	i = 0;
 	current = *tokens;
-	while (i < ac)
+	
+	while (i < ac && current)
 	{
-		if (current->sq)
+		/* 리디렉션 토큰들은 건너뛰기 */
+		while (current && (current->type == RD_I || current->type == RD_O || 
+						   current->type == RD_O_APPEND || current->type == HERE_DOC))
 		{
-			// 단일 따옴표: 환경변수 확장 없이 따옴표만 제거
-			args[i] = remove_quotes(current->str, true, false);
-		}
-		else if (current->dq)
-		{
-			// 이중 따옴표: 환경변수 확장 후 따옴표 제거
-			temp = make_arg(current->str, shell, current->dq);
-			if (!temp)
-			{
-				free_args(args);
-				return (NULL);
-			}
-			args[i] = remove_quotes(temp, false, true);
-			free(temp);
-		}
-		else
-		{
-			// 따옴표 없음: 환경변수 확장만
-			args[i] = make_arg(current->str, shell, current->dq);
+			current = current->next;
+			if (current) /* 파일명도 건너뛰기 */
+				current = current->next;
 		}
 		
+		if (!current)
+			break;
+		
+		if (current->type == PIPE)
+		{
+			current = current->next;
+			break;
+		}
+		
+		/* 단일 따옴표가 있으면 환경변수 확장하지 않음 */
+		bool expand_vars = !current->sq;
+		
+		args[i] = process_quotes_and_expand(current->str, shell, expand_vars);
 		if (!args[i])
 		{
-			free_args(args);
+			/* 메모리 해제 */
+			while (i > 0)
+			{
+				i--;
+				free(args[i]);
+			}
+			free(args);
 			return (NULL);
 		}
+		
 		current = current->next;
 		i++;
 	}
+	
 	return (args);
 }
 
@@ -182,18 +280,26 @@ char	**make_args(t_token **tokens, t_shell *shell)
 	char	**args;
 	
 	ac = count_args(tokens);
+	if (ac == 0)
+		return (NULL);
+		
 	args = (char **)malloc((ac + 1) * sizeof(char *));
 	if (!args)
 	{
 		print_mem_error("memory allocation failed", shell);
 		return (NULL);
 	}
+	
+	/* 배열 초기화 */
+	for (size_t i = 0; i <= ac; i++)
+		args[i] = NULL;
+	
 	args = args_creation_loop(tokens, args, shell, ac);
 	if (!args)
 	{	
 		print_mem_error("memory allocation failed", shell);
 		return (NULL);
 	}
-	args[ac] = NULL;
+	
 	return (args);
 }
