@@ -6,80 +6,11 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 16:22:28 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/16 00:13:43 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 05:56:44 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-// static void	print_tokens_list(t_token *tok)
-// {
-// 	while (tok)
-// 	{
-// 		printf("[TOKEN] id=%zu type=%d str=\"%s\" sq=%d dq=%d\n",
-// 			tok->id, tok->type,
-// 			tok->str ? tok->str : "(null)",
-// 			tok->sq, tok->dq);
-// 		tok = tok->next;
-// 	}
-// }
-
-// /* Print all commands for debugging */
-// static void	print_commands_list(t_com *cmd)
-// {
-// 	int	i;
-
-// 	while (cmd)
-// 	{
-// 		printf("[COMMAND] path=\"%s\" type=%d infile=\"%s\" outfile=\"%s\"",
-// 			cmd->path ? cmd->path : "(null)",
-// 			cmd->type,
-// 			cmd->infile ? cmd->infile : "(null)",
-// 			cmd->outfile ? cmd->outfile : "(null)");
-// 		printf(" append=%d is_piped=%d\n", cmd->append, cmd->is_piped);
-// 		if (cmd->args)
-// 		{
-// 			i = 0;
-// 			while (cmd->args[i])
-// 			{
-// 				printf("   arg[%d] = \"%s\"\n", i, cmd->args[i]);
-// 				i++;
-// 			}
-// 		}
-// 		cmd = cmd->next;
-// 	}
-// }
-
-// /* Print all environment variables for debugging */
-// static void	print_env_list(t_env *env)
-// {
-// 	while (env)
-// 	{
-// 		printf("[ENV] %s=%s\n",
-// 			env->name ? env->name : "(null)",
-// 			env->value ? env->value : "(null)");
-// 		env = env->next;
-// 	}
-// }
-
-// /* Main debug print function */
-// static void	print_shell_state(t_shell *sh)
-// {
-// 	if (!sh)
-// 	{
-// 		printf("[SHELL] (null)\n");
-// 		return ;
-// 	}
-// 	printf("========== SHELL STATE ==========\n");
-// 	printf("last_exit = %d\n", sh->last_exit);
-// 	printf("---- TOKENS ----\n");
-// 	print_tokens_list(sh->tokens);
-// 	printf("---- COMMANDS ----\n");
-// 	print_commands_list(sh->commands);
-// 	printf("---- ENVS ----\n");
-// 	print_env_list(sh->envs);
-// 	printf("=================================\n");
-// }
 
 static int	count_cmds(t_com *cur)
 {
@@ -121,6 +52,60 @@ static int	needs_parent(const char *name)
 	return (0);
 }
 
+/* 빈 명령어인지 확인하는 함수 */
+static int	is_empty_command(t_com *cmd)
+{
+	if (!cmd)
+		return (1);
+	if (!cmd->args)
+		return (1);
+	if (!cmd->args[0])
+		return (1);
+	if (cmd->args[0][0] == '\0')
+		return (1);
+	return (0);
+}
+
+/* 빈 명령어 처리 - 리다이렉션만 있으면 처리, 아니면 성공 */
+static int	handle_empty_command(t_com *cmd, t_shell *sh)
+{
+	int	saved_in;
+	int	saved_out;
+
+	/* 리다이렉션이 있으면 처리 */
+	if (has_redirs(cmd))
+	{
+		saved_in = dup(STDIN_FILENO);
+		saved_out = dup(STDOUT_FILENO);
+		if (saved_in < 0 || saved_out < 0)
+			return (1);
+		
+		if (apply_redirs(cmd, sh) < 0)
+		{
+			if (saved_in >= 0)
+				close(saved_in);
+			if (saved_out >= 0)
+				close(saved_out);
+			return (1);
+		}
+		
+		/* 표준 입출력 복원 */
+		if (saved_in >= 0)
+		{
+			dup2(saved_in, STDIN_FILENO);
+			close(saved_in);
+		}
+		if (saved_out >= 0)
+		{
+			dup2(saved_out, STDOUT_FILENO);
+			close(saved_out);
+		}
+	}
+	
+	/* 빈 명령어는 성공으로 처리 (bash 동작과 동일) */
+	return (0);
+}
+
 int	execute(t_shell *sh)
 {
 	t_com	*cmd;
@@ -129,6 +114,14 @@ int	execute(t_shell *sh)
 	cmd = sh->commands;
 	if (!cmd)
 		return (0);
+	
+	/* 빈 명령어 처리 */
+	if (is_empty_command(cmd))
+	{
+		sh->last_exit = handle_empty_command(cmd, sh);
+		return (sh->last_exit);
+	}
+	
 	n = count_cmds(cmd);
 	if (n == 1 && is_builtin(cmd->args[0]))
 	{

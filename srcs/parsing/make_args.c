@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 04:29:33 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 06:00:38 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,8 @@ static char	*remove_single_quotes_only(const char *str)
 	return (result);
 }
 
-/* 필요한 최종 크기를 미리 계산하는 함수 */
-static size_t	calculate_final_size(const char *str, t_shell *shell)
+/* 환경변수 확장 시 필요한 최종 크기를 계산하는 함수 */
+static size_t	calculate_expanded_size(const char *str, t_shell *shell)
 {
 	size_t	final_size;
 	size_t	i;
@@ -185,33 +185,22 @@ static size_t	calculate_final_size(const char *str, t_shell *shell)
 		}
 		else if (str[i] == '$' && !in_single_quote && str[i + 1])
 		{
-			char	*var_name;
-			char	*var_value;
-			size_t	var_len;
-			
-			i++; /* '$' 건너뛰기 */
-			
-			/* 유효한 변수명 길이 계산 */
-			var_len = get_valid_var_len(&str[i]);
-			
+			size_t	var_len = get_valid_var_len(&str[i + 1]);
 			if (var_len == 0)
 			{
-				/* 유효하지 않은 변수명이면 '$' 하나만 추가 */
 				final_size++;
+				i++;
 				continue;
 			}
 			
-			/* 변수명 추출 */
-			var_name = malloc(var_len + 1);
+			char	*var_name = malloc(var_len + 1);
 			if (!var_name)
 				return (0);
-			ft_strlcpy(var_name, &str[i], var_len + 1);
+			ft_strlcpy(var_name, &str[i + 1], var_len + 1);
 			
-			/* 환경변수 값 가져오기 */
+			char	*var_value;
 			if (ft_strcmp(var_name, "?") == 0)
-			{
 				var_value = get_sig_val(shell->last_exit);
-			}
 			else
 			{
 				t_env *env_node = find_env(var_name, &shell->envs);
@@ -222,10 +211,9 @@ static size_t	calculate_final_size(const char *str, t_shell *shell)
 			if (!var_value)
 				return (0);
 			
-			/* 환경변수 값의 길이를 최종 크기에 추가 */
 			final_size += ft_strlen(var_value);
 			free(var_value);
-			i += var_len;
+			i += var_len + 1;
 		}
 		else
 		{
@@ -234,82 +222,57 @@ static size_t	calculate_final_size(const char *str, t_shell *shell)
 		}
 	}
 	
-	return (final_size + 1); // null terminator 포함
+	return (final_size + 1);
 }
 
-/* 개선된 따옴표 제거 및 환경변수 확장 함수 */
+/* 따옴표 제거 및 환경변수 확장 */
 static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 {
-	char	*result;
-	size_t	i;
-	size_t	j;
-	size_t	final_size;
-	bool	in_single_quote;
-	bool	in_double_quote;
-
-	if (!str)
-		return (ft_strdup(""));
-	
-	/* 최종 크기를 미리 계산 */
-	final_size = calculate_final_size(str, shell);
+	size_t	final_size = calculate_expanded_size(str, shell);
 	if (final_size == 0)
 		return (NULL);
 	
-	result = malloc(final_size);
+	char	*result = malloc(final_size);
 	if (!result)
 		return (NULL);
 	
-	i = 0;
-	j = 0;
-	in_single_quote = false;
-	in_double_quote = false;
+	size_t	i = 0, j = 0;
+	bool	in_single_quote = false;
+	bool	in_double_quote = false;
 	
 	while (str[i] && j < final_size - 1)
 	{
 		if (str[i] == '\'' && !in_double_quote)
 		{
 			in_single_quote = !in_single_quote;
-			i++; // 따옴표 건너뛰기
+			i++;
 		}
 		else if (str[i] == '"' && !in_single_quote)
 		{
 			in_double_quote = !in_double_quote;
-			i++; // 따옴표 건너뛰기
+			i++;
 		}
 		else if (str[i] == '$' && !in_single_quote && str[i + 1])
 		{
-			char	*var_name;
-			char	*var_value;
-			size_t	var_len;
-			size_t	value_len;
-			size_t	k;
-			
-			i++; /* '$' 건너뛰기 */
-			
-			/* 유효한 변수명 길이 계산 */
-			var_len = get_valid_var_len(&str[i]);
-			
+			size_t	var_len = get_valid_var_len(&str[i + 1]);
 			if (var_len == 0)
 			{
-				/* 유효하지 않은 변수명이면 '$' 그대로 출력 */
 				result[j++] = '$';
+				i++;
 				continue;
 			}
 			
-			/* 변수명 추출 */
-			var_name = malloc(var_len + 1);
+			char	*var_name = malloc(var_len + 1);
 			if (!var_name)
 			{
 				free(result);
 				return (NULL);
 			}
-			ft_strlcpy(var_name, &str[i], var_len + 1);
+			ft_strlcpy(var_name, &str[i + 1], var_len + 1);
 			
-			/* 환경변수 값 가져오기 */
+			char	*var_value;
 			if (ft_strcmp(var_name, "?") == 0)
-			{
 				var_value = get_sig_val(shell->last_exit);
-			}
 			else
 			{
 				t_env *env_node = find_env(var_name, &shell->envs);
@@ -323,16 +286,12 @@ static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 				return (NULL);
 			}
 			
-			/* 환경변수 값 복사 (안전하게) */
-			value_len = ft_strlen(var_value);
-			k = 0;
-			while (k < value_len && j < final_size - 1)
-			{
-				result[j++] = var_value[k++];
-			}
-			i += var_len;
+			size_t	value_len = ft_strlen(var_value);
+			for (size_t k = 0; k < value_len && j < final_size - 1; k++)
+				result[j++] = var_value[k];
 			
 			free(var_value);
+			i += var_len + 1;
 		}
 		else
 		{
@@ -344,14 +303,53 @@ static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 	return (result);
 }
 
+/* 빈 문자열 인자들을 필터링하는 함수 */
+static char	**filter_empty_args(char **args)
+{
+	if (!args)
+		return (NULL);
+	
+	size_t	count = 0;
+	for (size_t i = 0; args[i]; i++)
+		if (args[i][0] != '\0')
+			count++;
+	
+	if (count == 0)
+	{
+		free_args(args);
+		return (NULL);
+	}
+	
+	char	**filtered = malloc((count + 1) * sizeof(char *));
+	if (!filtered)
+	{
+		free_args(args);
+		return (NULL);
+	}
+	
+	size_t	j = 0;
+	for (size_t i = 0; args[i]; i++)
+	{
+		if (args[i][0] != '\0')
+		{
+			filtered[j++] = args[i];
+		}
+		else
+		{
+			free(args[i]);
+		}
+	}
+	filtered[j] = NULL;
+	
+	free(args);
+	return (filtered);
+}
+
 char	**args_creation_loop(t_token **tokens, char **args,
 	t_shell *shell, size_t ac)
 {
-	size_t	i;
-	t_token	*current;
-
-	i = 0;
-	current = *tokens;
+	size_t	i = 0;
+	t_token	*current = *tokens;
 	
 	while (i < ac && current)
 	{
@@ -360,39 +358,29 @@ char	**args_creation_loop(t_token **tokens, char **args,
 						   current->type == RD_O_APPEND || current->type == HERE_DOC))
 		{
 			current = current->next;
-			if (current) /* 파일명도 건너뛰기 */
+			if (current)
 				current = current->next;
 		}
 		
-		if (!current)
+		if (!current || current->type == PIPE)
 			break;
-		
-		if (current->type == PIPE)
-		{
-			current = current->next;
-			break;
-		}
 
-		/* 핵심 수정: 토큰의 따옴표 플래그를 확인 */
+		/* 토큰의 따옴표 플래그에 따른 처리 */
 		if (current->sq && !current->dq)
 		{
-			/* 단일따옴표로만 둘러싸인 경우: 환경변수 확장 안 함 */
+			/* 단일따옴표: 환경변수 확장 안 함 */
 			args[i] = remove_single_quotes_only(current->str);
 		}
 		else
 		{
-			/* 그 외의 경우: 환경변수 확장 및 따옴표 제거 */
+			/* 그 외: 환경변수 확장 및 따옴표 제거 */
 			args[i] = process_quotes_and_expand(current->str, shell);
 		}
 		
 		if (!args[i])
 		{
-			/* 메모리 해제 */
-			while (i > 0)
-			{
-				i--;
-				free(args[i]);
-			}
+			for (size_t k = 0; k < i; k++)
+				free(args[k]);
 			free(args);
 			return (NULL);
 		}
@@ -406,29 +394,28 @@ char	**args_creation_loop(t_token **tokens, char **args,
 
 char	**make_args(t_token **tokens, t_shell *shell)
 {
-	size_t	ac;
-	char	**args;
-	
-	ac = count_args(tokens);
+	size_t	ac = count_args(tokens);
 	if (ac == 0)
 		return (NULL);
 		
-	args = (char **)malloc((ac + 1) * sizeof(char *));
+	char	**args = malloc((ac + 1) * sizeof(char *));
 	if (!args)
 	{
 		print_mem_error("memory allocation failed", shell);
 		return (NULL);
 	}
 	
-	/* 배열 초기화 */
 	for (size_t i = 0; i <= ac; i++)
 		args[i] = NULL;
 	
 	args = args_creation_loop(tokens, args, shell, ac);
 	if (!args)
-	{	
+	{
 		print_mem_error("memory allocation failed", shell);
 		return (NULL);
 	}
+	
+	/* 빈 문자열 인자들 필터링 */
+	args = filter_empty_args(args);
 	return (args);
 }
