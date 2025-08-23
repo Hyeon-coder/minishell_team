@@ -6,13 +6,11 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:09:48 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 04:18:05 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 04:24:08 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-/* make_args.c 파일 상단에 추가할 함수들 */
 
 /* 환경변수명이 유효한지 확인 */
 static int	is_valid_var_start(char c)
@@ -128,7 +126,7 @@ char	*make_arg(char *str, t_shell *shell, bool is_dq)
 	return (arg);
 }
 
-/* 필요한 최종 크기를 미리 계산하는 함수 */
+/* 필요한 최종 크기를 미리 계산하는 함수 - 수정된 버전 */
 static size_t	calculate_final_size(const char *str, t_shell *shell)
 {
 	size_t	final_size;
@@ -156,7 +154,7 @@ static size_t	calculate_final_size(const char *str, t_shell *shell)
 			in_double_quote = !in_double_quote;
 			i++; // 따옴표는 최종 결과에 포함되지 않음
 		}
-		else if (str[i] == '$' && !in_single_quote)  /* 핵심 수정: str[i + 1] 조건 제거 */
+		else if (str[i] == '$' && !in_single_quote && str[i + 1]) // 핵심 수정: str[i + 1] 조건 복구
 		{
 			char	*var_name;
 			char	*var_value;
@@ -210,7 +208,7 @@ static size_t	calculate_final_size(const char *str, t_shell *shell)
 	return (final_size + 1); // null terminator 포함
 }
 
-/* 개선된 따옴표 제거 및 환경변수 확장 함수 */
+/* 개선된 따옴표 제거 및 환경변수 확장 함수 - 완전히 새로 작성된 버전 */
 static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 {
 	char	*result;
@@ -237,7 +235,7 @@ static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 	in_single_quote = false;
 	in_double_quote = false;
 	
-	while (str[i])
+	while (str[i] && j < final_size - 1)
 	{
 		if (str[i] == '\'' && !in_double_quote)
 		{
@@ -249,12 +247,13 @@ static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 			in_double_quote = !in_double_quote;
 			i++; // 따옴표 건너뛰기
 		}
-		else if (str[i] == '$' && !in_single_quote)  /* 핵심 수정: 단일따옴표만 체크, str[i + 1] 조건 제거 */
+		else if (str[i] == '$' && !in_single_quote && str[i + 1]) // 핵심 수정: str[i + 1] 조건 복구
 		{
 			char	*var_name;
 			char	*var_value;
 			size_t	var_len;
 			size_t	value_len;
+			size_t	k;
 			
 			i++; /* '$' 건너뛰기 */
 			
@@ -264,8 +263,7 @@ static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 			if (var_len == 0)
 			{
 				/* 유효하지 않은 변수명이면 '$' 그대로 출력 */
-				if (j < final_size - 1)
-					result[j++] = '$';
+				result[j++] = '$';
 				continue;
 			}
 			
@@ -298,10 +296,10 @@ static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 			
 			/* 환경변수 값 복사 (안전하게) */
 			value_len = ft_strlen(var_value);
-			if (j + value_len < final_size)
+			k = 0;
+			while (k < value_len && j < final_size - 1)
 			{
-				ft_strlcpy(&result[j], var_value, value_len + 1);
-				j += value_len;
+				result[j++] = var_value[k++];
 			}
 			i += var_len;
 			
@@ -309,10 +307,7 @@ static char	*process_quotes_and_expand(const char *str, t_shell *shell)
 		}
 		else
 		{
-			if (j < final_size - 1) // null terminator를 위한 공간 확보
-				result[j++] = str[i++];
-			else
-				i++; // 버퍼 오버플로우 방지
+			result[j++] = str[i++];
 		}
 	}
 	
