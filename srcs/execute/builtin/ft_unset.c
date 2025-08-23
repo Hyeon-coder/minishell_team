@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ljh3900 <ljh3900@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 14:39:31 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/06/08 07:55:02 by ljh3900          ###   ########.fr       */
+/*   Updated: 2025/08/23 07:18:46 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int ft_unset(char **argv, t_env **env_list)
 	int i;
 
 	if (!argv[1])
-		err_with_cmd("unset: ", NULL, "not enough arguments\n");
+		return (0);
 	i = 1;
 	while (argv[i])
 	{

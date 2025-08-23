@@ -6,7 +6,7 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 01:13:41 by ljh3900           #+#    #+#             */
-/*   Updated: 2025/08/23 07:13:29 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 07:19:21 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,14 @@ static void parse_arg(const char *arg, char **out_name, char **out_value)
 	char	*eq;
 
 	eq = ft_strchr(arg, '=');
-	if (eq)
+	if (eq && eq != arg)  /* = 기호가 있고, 첫 번째 문자가 아닌 경우 */
 	{
 		*out_name  = ft_strndup(arg, eq - arg);
 		*out_value = ft_strdup(eq + 1);
 	}
 	else
 	{
+		/* = 기호가 없거나 첫 번째 문자가 = 인 경우 */
 		*out_name  = ft_strdup(arg);
 		*out_value = ft_strdup("");
 	}
