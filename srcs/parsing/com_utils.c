@@ -6,11 +6,56 @@
 /*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 19:36:15 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 03:00:15 by juhyeonl         ###   ########.fr       */
+/*   Updated: 2025/08/23 04:53:30 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+/* 리다이렉션 파일명에서 따옴표를 제거하는 함수 */
+static char	*remove_quotes_from_filename(const char *str)
+{
+	char	*result;
+	size_t	i;
+	size_t	j;
+	size_t	len;
+	bool	in_single_quote;
+	bool	in_double_quote;
+
+	if (!str)
+		return (NULL);
+	
+	len = ft_strlen(str);
+	result = malloc(len + 1);
+	if (!result)
+		return (NULL);
+	
+	i = 0;
+	j = 0;
+	in_single_quote = false;
+	in_double_quote = false;
+	
+	while (str[i])
+	{
+		if (str[i] == '\'' && !in_double_quote)
+		{
+			in_single_quote = !in_single_quote;
+			i++; // 따옴표 건너뛰기
+		}
+		else if (str[i] == '"' && !in_single_quote)
+		{
+			in_double_quote = !in_double_quote;
+			i++; // 따옴표 건너뛰기
+		}
+		else
+		{
+			result[j++] = str[i++];
+		}
+	}
+	
+	result[j] = '\0';
+	return (result);
+}
 
 size_t	count_args(t_token **tokens)
 {
@@ -63,12 +108,26 @@ size_t	count_coms(t_token **tokens)
 
 void	fill_o_dir(t_com *new, t_token *d)
 {
+	char	*clean_filename;
+
 	if (!new || !d || !d->next || !d->next->str)
 		return ;
 		
+	/* 기존 파일명 해제 */
 	if (new->outfile)
 		free(new->outfile);
-	new->outfile = ft_strdup(d->next->str);
+	
+	/* 따옴표 제거한 파일명 생성 */
+	clean_filename = remove_quotes_from_filename(d->next->str);
+	if (!clean_filename)
+	{
+		new->outfile = ft_strdup(d->next->str); // 실패 시 원본 사용
+	}
+	else
+	{
+		new->outfile = clean_filename;
+	}
+	
 	new->redir_type_out = true;
 	
 	if (d->type == RD_O_APPEND)
@@ -79,12 +138,26 @@ void	fill_o_dir(t_com *new, t_token *d)
 
 void	fill_in_dir(t_com *new, t_token *d)
 {
+	char	*clean_filename;
+
 	if (!new || !d || !d->next || !d->next->str)
 		return ;
 		
+	/* 기존 파일명 해제 */
 	if (new->infile)
 		free(new->infile);
-	new->infile = ft_strdup(d->next->str);
+	
+	/* 따옴표 제거한 파일명 생성 */
+	clean_filename = remove_quotes_from_filename(d->next->str);
+	if (!clean_filename)
+	{
+		new->infile = ft_strdup(d->next->str); // 실패 시 원본 사용
+	}
+	else
+	{
+		new->infile = clean_filename;
+	}
+	
 	new->redir_type_in = true;
 }
 
