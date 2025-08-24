@@ -161,7 +161,7 @@ void	fill_in_dir(t_com *new, t_token *d)
 	new->redir_type_in = true;
 }
 
-/* bash 동작 모방: 마지막 리다이렉션 사용 */
+/* bash 동작 모방: 마지막 리다이렉션만 사용 */
 void	setup_directors(t_com *new, t_token **tokens)
 {
 	t_token	*current;

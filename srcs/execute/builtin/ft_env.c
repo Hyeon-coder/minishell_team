@@ -12,6 +12,45 @@
 
 #include "../../../includes/minishell.h"
 
+// 환경 변수 노드 이름으로 비교하는 함수
+int	env_cmp(t_env *a, t_env *b)
+{
+	return ft_strcmp(a->name, b->name);
+}
+
+// 환경 변수 리스트를 버블 정렬하는 함수
+void	sort_env_list(t_env **env_list)
+{
+	int		swapped;
+	t_env	*ptr1;
+	t_env	*lptr = NULL;
+
+	if (env_list == NULL)
+		return;
+	swapped = 1;
+	while (swapped)
+	{
+		swapped = 0;
+		ptr1 = *env_list;
+		while (ptr1->next != lptr)
+		{
+			if (env_cmp(ptr1, ptr1->next) > 0)
+			{
+				// 스왑 로직 (노드 자체를 스왑)
+				t_env *tmp = ptr1->next;
+				ptr1->next = tmp->next;
+				tmp->next = ptr1;
+				if (lptr == ptr1->next)
+					lptr = tmp;
+				*env_list = tmp;
+				swapped = 1;
+			}
+			ptr1 = ptr1->next;
+		}
+		lptr = ptr1;
+	}
+}
+
 static int	check_option(char **argv)
 {
 	int	i;
@@ -42,6 +81,10 @@ int	ft_env(char **argv, t_env *env_list)
 		}
 		return (1);
 	}
+	
+	// 출력 전에 환경 변수 리스트를 정렬
+	sort_env_list(&env_list);
+	
 	tmp = env_list;
 	while (tmp)
 	{
