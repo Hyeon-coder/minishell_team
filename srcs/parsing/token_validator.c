@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   token_validator.c                                  :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 20:56:42 by mhurtamo          #+#    #+#             */
-/*   Updated: 2025/08/23 06:37:25 by juhyeonl         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* token_validator.c                                  :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2025/08/07 20:56:42 by mhurtamo          #+#    #+#             */
+/* Updated: 2025/08/23 06:37:25 by juhyeonl         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
@@ -73,25 +73,32 @@ bool	token_validator(t_token **tokens, t_shell *shell)
 	not_present = true;
 	while (token && not_present)
 	{
-		/* 기존 검증들 - 그대로 유지 */
-		if (is_pipe_or_rd(token) && is_pipe_or_rd(token->next))
+		// 파이프 뒤에 파이프가 오면 오류 (예: `| |`)
+		if (token->type == PIPE && token->next && token->next->type == PIPE)
 			not_present = false;
+		// 리다이렉션 뒤에 파이프가 오면 오류 (예: `>|`)
+		if (is_pipe_or_rd(token) && token->type != PIPE && token->next && token->next->type == PIPE)
+			not_present = false;
+		// 명령어가 파이프나 리다이렉션으로 끝나면 오류 (예: `ls |`, `echo hi >`)
 		if (is_pipe_or_rd(token) && !token->next)
 			not_present = false;
+		// `<<` 뒤에 파일명이 없으면 오류 (예: `cat <<`)
 		if (token->type == HERE_DOC && !token->next)
 			not_present = false;
+		// 파이프나 리다이렉션이 명령의 시작에 오면 오류 (예: `| ls`)
 		if (is_pipe_or_rd(token) && !token->prev)
 			not_present = false;
+		// 따옴표로 감싸지지 않은 메타 문자가 토큰에 포함되면 오류
 		if (does_contain_meta(token) && token->type == WORD)
 			not_present = false;
 		
-		/* 🆕 추가 검증: 리다이렉션 후 빈 파일명 체크 */
+		/* 리다이렉션 뒤에 빈 파일명(`""` 또는 `''`)이 오면 오류 */
 		if ((token->type == RD_I || token->type == RD_O || 
 		     token->type == RD_O_APPEND || token->type == HERE_DOC) && 
 		    token->next && token->next->str && token->next->str[0] == '\0')
 			not_present = false;
 			
-		/* 🆕 추가 검증: 파일명이 리다이렉션 연산자인 경우 */
+		/* 파일명이 리다이렉션 연산자인 경우 오류 (예: `cat > <`) */
 		if (token->prev && 
 		    (token->prev->type == RD_I || token->prev->type == RD_O ||
 		     token->prev->type == RD_O_APPEND || token->prev->type == HERE_DOC) &&

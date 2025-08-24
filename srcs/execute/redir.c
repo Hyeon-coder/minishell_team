@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   redir.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/15 16:24:02 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/23 06:34:27 by juhyeonl         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* redir.c                                            :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2025/08/15 16:24:02 by juhyeonl          #+#    #+#             */
+/* Updated: 2025/08/23 06:34:27 by juhyeonl         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
@@ -67,8 +67,7 @@ static int	open_outfile(const char *path, int append)
 /* 모든 리다이렉션 파일의 유효성을 먼저 검사 */
 static int	validate_all_redirections(t_com *cmd)
 {
-	/* 
-	 * bash는 실행 전에 모든 리다이렉션 파일을 검사한다
+	/* * bash는 실행 전에 모든 리다이렉션 파일을 검사한다
 	 * 하나라도 실패하면 명령어 실행 자체를 중단
 	 */
 	
@@ -135,12 +134,21 @@ int	apply_redirs(t_com *cmd, t_shell *sh)
 	
 	/* 먼저 모든 리다이렉션 검증 */
 	if (validate_all_redirections(cmd) < 0)
+	{
+		sh->last_exit = 1;
 		return (-1);
+	}
 	
 	/* 실제 리다이렉션 적용 */
 	if (open_infile(cmd->infile) < 0)
+	{
+		sh->last_exit = 1;
 		return (-1);
+	}
 	if (open_outfile(cmd->outfile, cmd->append) < 0)
+	{
+		sh->last_exit = 1;
 		return (-1);
+	}
 	return (0);
 }
