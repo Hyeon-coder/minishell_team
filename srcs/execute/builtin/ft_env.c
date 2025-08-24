@@ -25,7 +25,7 @@ void	sort_env_list(t_env **env_list)
 	t_env	*ptr1;
 	t_env	*lptr = NULL;
 
-	if (env_list == NULL)
+	if (env_list == NULL || *env_list == NULL)
 		return;
 	swapped = 1;
 	while (swapped)
