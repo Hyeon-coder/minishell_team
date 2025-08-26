@@ -1,88 +1,97 @@
 # **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/05/29 15:00:00 by JuHyeon           #+#    #+#              #
-#    Updated: 2025/08/16 01:14:06 by juhyeonl         ###   ########.fr        #
-#                                                                              #
+#																			  #
+#														 :::	  ::::::::	#
+#	Makefile										   :+:	  :+:	:+:	#
+#													 +:+ +:+		 +:+	  #
+#	By: mpierce <mpierce@student.hive.fi>		  +#+  +:+	   +#+		 #
+#												 +#+#+#+#+#+   +#+			#
+#	Created: 2025/03/12 14:45:55 by clu			   #+#	#+#			  #
+#	Updated: 2025/04/18 17:09:58 by mpierce		  ###   ########.fr		#
+#																			  #
 # **************************************************************************** #
 
-NAME    = minishell
-CC      = cc
-CFLAGS  = -Wall -Wextra -Werror -Iincludes -Ilibft
-LDFLAGS = -lreadline
-RM      = rm -f
+# Program Name
+NAME = minishell
 
-OBJDIR  = objs
+# Comiler and Flags
+CC 		= cc
+CFLAGS 	= -Wall -Werror -Wextra
 
-SRCS = srcs/main.c \
-	srcs/utils.c \
-	srcs/execute/exe_utils_dir/cd_resolve_path.c \
-	srcs/execute/exe_utils_dir/env_utils.c \
-	srcs/execute/exe_utils_dir/execute_utils.c \
-	srcs/execute/exe_utils_dir/export_unset_utils.c \
-	srcs/execute/exe_utils_dir/is_builtin.c \
-	srcs/execute/builtin/ft_cd.c \
-	srcs/execute/builtin/ft_echo.c \
-	srcs/execute/builtin/ft_env.c \
-	srcs/execute/builtin/ft_exit.c \
-	srcs/execute/builtin/ft_export.c \
-	srcs/execute/builtin/ft_pwd.c \
-	srcs/execute/builtin/ft_unset.c \
-	srcs/execute/stub_pipline.c \
-	srcs/parsing/arg_utils.c \
-	srcs/parsing/com_utils.c \
-	srcs/parsing/env_expansion.c \
-	srcs/parsing/error_printers.c \
-	srcs/parsing/free_functions.c \
-	srcs/parsing/line_validator.c \
-	srcs/parsing/make_args.c \
-	srcs/parsing/make_coms.c \
-	srcs/parsing/path_and_file_validators.c \
-	srcs/parsing/print_tokens.c \
-	srcs/parsing/random_utils.c \
-	srcs/parsing/str_utils.c \
-	srcs/parsing/tokenization.c \
-	srcs/parsing/token_utils.c \
-	srcs/parsing/token_validator.c \
-	srcs/parsing/type_setter_utils.c \
-	srcs/execute/execute.c \
-	srcs/execute/builtin_parent.c \
-	srcs/execute/redir.c \
-	srcs/execute/pipes_utils.c \
-	srcs/execute/signals_child.c \
-	srcs/execute/wait_utils.c \
-	srcs/execute/child.c \
-	srcs/execute/run_external.c \
-	srcs/execute/run_builtin_parent_with_redirs.c \
-	srcs/execute/pipeline.c
+# Directories
+SRC_DIR 		= ./src
+EXEC_DIR		= execution/
+EXP_DIR			= parse_input/expander/
+LEX_DIR			= parse_input/lexer/
+PAR_DIR			= parse_input/parser/
+PARSE_DIR		= parse_input/
+UTL_DIR			= utils/
+BLT_DIR			= builtins/
+OBJ_DIR 		= ./obj
+LIBFT_DIR 		= ./libft
 
-OBJS = $(SRCS:%.c=$(OBJDIR)/%.o)
+# Libraries
+LIBFT = $(LIBFT_DIR)/libft.a
 
-all: $(NAME)
+# Header files
+HEADERS = -I./include -I$(LIBFT_DIR)/include
+HEADERS_DEP = include/minishell.h
 
-$(NAME): $(OBJS) libft/libft.a
-	$(CC) $(CFLAGS) $(OBJS) libft/libft.a $(LDFLAGS) -o $(NAME)
+# Source files and object files
+SRC = \
+	$(SRC_DIR)$(EXEC_DIR)file_handler.c $(SRC_DIR)$(EXEC_DIR)exec_cmds.c $(SRC_DIR)$(EXEC_DIR)exec_master.c \
+	$(SRC_DIR)$(EXEC_DIR)exec_pipeline.c $(SRC_DIR)$(EXEC_DIR)execve.c $(SRC_DIR)$(EXEC_DIR)exec_utils.c \
+	$(SRC_DIR)$(EXEC_DIR)heredoc_utils.c $(SRC_DIR)$(EXEC_DIR)only_redir.c $(SRC_DIR)$(EXP_DIR)expand.c \
+	$(SRC_DIR)$(EXP_DIR)expand_utils.c $(SRC_DIR)$(LEX_DIR)operators.c \
+	$(SRC_DIR)$(LEX_DIR)quotes.c $(SRC_DIR)$(LEX_DIR)lexer.c $(SRC_DIR)$(LEX_DIR)tokens.c \
+	$(SRC_DIR)$(LEX_DIR)words.c $(SRC_DIR)$(PAR_DIR)ast.c $(SRC_DIR)$(EXEC_DIR)execve_utils.c \
+	$(SRC_DIR)$(PAR_DIR)parser.c $(SRC_DIR)$(PARSE_DIR)process_input_utils.c \
+	$(SRC_DIR)$(PARSE_DIR)process_input.c $(SRC_DIR)$(UTL_DIR)error_utils.c $(SRC_DIR)$(UTL_DIR)shlvl.c \
+	$(SRC_DIR)$(UTL_DIR)utils.c $(SRC_DIR)$(UTL_DIR)prompt.c $(SRC_DIR)$(UTL_DIR)free.c $(SRC_DIR)$(UTL_DIR)free_utils.c \
+	$(SRC_DIR)$(UTL_DIR)signals.c $(SRC_DIR)$(BLT_DIR)builtin_utils.c $(SRC_DIR)$(BLT_DIR)cd_utils.c \
+	$(SRC_DIR)$(BLT_DIR)exit.c $(SRC_DIR)$(BLT_DIR)export_utils.c $(SRC_DIR)$(BLT_DIR)cd.c \
+	$(SRC_DIR)$(BLT_DIR)echo.c $(SRC_DIR)$(BLT_DIR)export.c $(SRC_DIR)$(BLT_DIR)misc.c $(SRC_DIR)main.c \
+	$(SRC_DIR)$(PAR_DIR)redirects.c $(SRC_DIR)$(PAR_DIR)validate.c $(SRC_DIR)$(EXEC_DIR)update_env.c \
+	$(SRC_DIR)$(EXP_DIR)retoken.c $(SRC_DIR)$(PAR_DIR)redirects_utils.c $(SRC_DIR)$(PAR_DIR)parser_utils.c \
+	$(SRC_DIR)$(BLT_DIR)extras.c 
+OBJ = $(SRC:$(SRC_DIR)%=$(OBJ_DIR)/%)
+OBJ := $(OBJ:.c=.o)
 
-libft/libft.a:
-	$(MAKE) -C libft
+all: $(LIBFT) $(NAME)
 
-$(OBJDIR)/%.o: %.c includes/minishell.h
+$(NAME): $(OBJ)
+	@echo "Compiling $(NAME) ..."
+	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(HEADERS) -o $(NAME) -lreadline
+	@echo "Done"
+
+# Compile the object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS_DEP)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@echo "Compiling $<..."
+	@$(CC) $(CFLAGS) $(HEADERS) -c $< -o $@
+
+# Compile the Libft library
+$(LIBFT):
+	@echo "Compiling Libft..."
+	@make -C $(LIBFT_DIR) --no-print-directory
+	@echo "Done"
 
 clean:
-	$(RM) -r $(OBJDIR)
-	$(MAKE) -C libft clean
+	@make -C $(LIBFT_DIR) clean --no-print-directory
+	@rm -rf $(OBJ_DIR)
+	@echo "Cleaned up all object files"
 
 fclean: clean
-	$(RM) $(NAME)
-	$(MAKE) -C libft fclean
+	@rm -f $(NAME)
+	@make -C $(LIBFT_DIR) fclean --no-print-directory
+	@echo "Cleaned up $(NAME)"
+	@echo "Cleaned up everything"
 
 re: fclean all
+	@echo "Remade everything"
 
-.PHONY: all clean fclean re
-.SECONDARY: $(OBJS)
+full: re
+	@make -C $(LIBFT_DIR) clean --no-print-directory
+	@rm -rf $(OBJ_DIR)
+	@echo "Cleaned up all object files"
+
+.PHONY: all clean fclean re full
