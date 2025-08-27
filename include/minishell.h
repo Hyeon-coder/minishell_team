@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mpierce <mpierce@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/05/22 14:53:13 by mpierce          ###   ########.fr       */
+/*   Updated: 2025/08/28 00:11:05 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,6 +229,17 @@ void		run_export_args(t_ms *ms, char **full_cmd);
 void		invalid_export(t_ms *ms, char *name);
 void		check_valid_arg_exit(t_ms *ms, char *code);
 
+//////////////////////////////// J's Builtins /////////////////////////////////
+int			builtin_cd(t_ms *ms, char **args);
+int			builtin_echo(t_ms *ms, char **args);
+int			builtin_exit(t_ms *ms, char **args);
+int			builtin_export(t_ms *ms, char **args);
+int			builtin_pwd(t_ms *ms);
+int			builtin_unset(t_ms *ms, char **args);
+int			execute_builtin_cmd(t_ms *ms, t_cmd *cmd);
+int			execute_builtin(t_ms *ms, char **args);
+int			is_builtin(char *cmd);
+
 ////////////////////////////////// Utils //////////////////////////////////////
 void		*x_malloc(t_ms *ms, size_t size);
 char		*x_strdup(t_ms *ms, const char *s);
@@ -281,6 +292,15 @@ void		next_pipe(t_ms *ms, int last);
 int			readline_break(char *line, int fd);
 char		*get_line(char *temp, char *line);
 void		wait_help(t_ms *ms);
+
+///////////////////////////////// J's Executor ////////////////////////////////
+int			_executor(t_ms *ms, t_ast *node, int is_child);
+int			execute_pipeline(t_ms *ms, t_ast *node);
+int			execute_simple_command(t_ms *ms, t_cmd *cmd, int is_child);
+int			executor(t_ms *ms, t_ast *node);
+char		*find_command_path(char *cmd, t_ms *ms);
+int			apply_redirections_for_empty(t_ms *ms, t_cmd *cmd);
+int			apply_redirections(t_ms *ms, t_cmd *cmd);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);

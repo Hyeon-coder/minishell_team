@@ -26,6 +26,8 @@ PAR_DIR			= parse_input/parser/
 PARSE_DIR		= parse_input/
 UTL_DIR			= utils/
 BLT_DIR			= builtins/
+J_EXEC_DIR		= j_exec/
+J_BLT_DIR		= j_builtins/
 OBJ_DIR 		= ./obj
 LIBFT_DIR 		= ./libft
 
@@ -52,7 +54,11 @@ SRC = \
 	$(SRC_DIR)$(BLT_DIR)echo.c $(SRC_DIR)$(BLT_DIR)export.c $(SRC_DIR)$(BLT_DIR)misc.c $(SRC_DIR)main.c \
 	$(SRC_DIR)$(PAR_DIR)redirects.c $(SRC_DIR)$(PAR_DIR)validate.c $(SRC_DIR)$(EXEC_DIR)update_env.c \
 	$(SRC_DIR)$(EXP_DIR)retoken.c $(SRC_DIR)$(PAR_DIR)redirects_utils.c $(SRC_DIR)$(PAR_DIR)parser_utils.c \
-	$(SRC_DIR)$(BLT_DIR)extras.c 
+	$(SRC_DIR)$(BLT_DIR)extras.c \
+	$(SRC_DIR)$(J_BLT_DIR)builtin_cd.c $(SRC_DIR)$(J_BLT_DIR)builtin_echo.c $(SRC_DIR)$(J_BLT_DIR)builtin_exit.c \
+	$(SRC_DIR)$(J_BLT_DIR)bultin_export.c $(SRC_DIR)$(J_BLT_DIR)buitlin_pwd.c $(SRC_DIR)$(J_BLT_DIR)builtin_unset.c \
+	$(SRC_DIR)$(J_BLT_DIR)builtins.c $(SRC_DIR)$(J_EXEC_DIR)execute_pipeline.c $(SRC_DIR)$(J_EXEC_DIR)executor.c \
+	$(SRC_DIR)$(J_EXEC_DIR)execute_simple_cmd.c $(SRC_DIR)$(J_EXEC_DIR)find_path.c $(SRC_DIR)$(J_EXEC_DIR)redirect.c
 OBJ = $(SRC:$(SRC_DIR)%=$(OBJ_DIR)/%)
 OBJ := $(OBJ:.c=.o)
 
