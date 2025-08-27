@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 10:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/27 23:36:48 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/28 00:58:18 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,4 +80,39 @@ int	execute_builtin_cmd(t_ms *ms, t_cmd *cmd)
 		return (127);
 	
 	return (execute_builtin(ms, cmd->full_cmd));
+}
+
+int	builtin_env(t_ms *ms)
+{
+	int		i;
+	int		j;
+	bool	has_value;
+
+	if (!ms || !ms->envp)
+		return (1);
+
+	i = 0;
+	while (ms->envp[i])
+	{
+		j = 0;
+		has_value = false;
+		
+		// = 문자가 있는지 확인 (값이 있는 환경변수만 출력)
+		while (ms->envp[i][j])
+		{
+			if (ms->envp[i][j] == '=')
+			{
+				has_value = true;
+				break;
+			}
+			j++;
+		}
+		
+		if (has_value)
+			ft_putendl_fd(ms->envp[i], STDOUT_FILENO);
+		i++;
+	}
+	
+	ms->exit_status = 0;
+	return (0);
 }

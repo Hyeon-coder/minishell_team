@@ -40,21 +40,16 @@ HEADERS_DEP = include/minishell.h
 
 # Source files and object files
 SRC = \
-	$(SRC_DIR)$(EXEC_DIR)file_handler.c $(SRC_DIR)$(EXEC_DIR)exec_cmds.c $(SRC_DIR)$(EXEC_DIR)exec_master.c \
-	$(SRC_DIR)$(EXEC_DIR)exec_pipeline.c $(SRC_DIR)$(EXEC_DIR)execve.c $(SRC_DIR)$(EXEC_DIR)exec_utils.c \
-	$(SRC_DIR)$(EXEC_DIR)heredoc_utils.c $(SRC_DIR)$(EXEC_DIR)only_redir.c $(SRC_DIR)$(EXP_DIR)expand.c \
+	$(SRC_DIR)$(EXP_DIR)expand.c \
 	$(SRC_DIR)$(EXP_DIR)expand_utils.c $(SRC_DIR)$(LEX_DIR)operators.c \
 	$(SRC_DIR)$(LEX_DIR)quotes.c $(SRC_DIR)$(LEX_DIR)lexer.c $(SRC_DIR)$(LEX_DIR)tokens.c \
-	$(SRC_DIR)$(LEX_DIR)words.c $(SRC_DIR)$(PAR_DIR)ast.c $(SRC_DIR)$(EXEC_DIR)execve_utils.c \
+	$(SRC_DIR)$(LEX_DIR)words.c $(SRC_DIR)$(PAR_DIR)ast.c \
 	$(SRC_DIR)$(PAR_DIR)parser.c $(SRC_DIR)$(PARSE_DIR)process_input_utils.c \
 	$(SRC_DIR)$(PARSE_DIR)process_input.c $(SRC_DIR)$(UTL_DIR)error_utils.c $(SRC_DIR)$(UTL_DIR)shlvl.c \
 	$(SRC_DIR)$(UTL_DIR)utils.c $(SRC_DIR)$(UTL_DIR)prompt.c $(SRC_DIR)$(UTL_DIR)free.c $(SRC_DIR)$(UTL_DIR)free_utils.c \
-	$(SRC_DIR)$(UTL_DIR)signals.c $(SRC_DIR)$(BLT_DIR)builtin_utils.c $(SRC_DIR)$(BLT_DIR)cd_utils.c \
-	$(SRC_DIR)$(BLT_DIR)exit.c $(SRC_DIR)$(BLT_DIR)export_utils.c $(SRC_DIR)$(BLT_DIR)cd.c \
-	$(SRC_DIR)$(BLT_DIR)echo.c $(SRC_DIR)$(BLT_DIR)export.c $(SRC_DIR)$(BLT_DIR)misc.c $(SRC_DIR)main.c \
-	$(SRC_DIR)$(PAR_DIR)redirects.c $(SRC_DIR)$(PAR_DIR)validate.c $(SRC_DIR)$(EXEC_DIR)update_env.c \
+	$(SRC_DIR)$(UTL_DIR)signals.c $(SRC_DIR)main.c \
+	$(SRC_DIR)$(PAR_DIR)redirects.c $(SRC_DIR)$(PAR_DIR)validate.c \
 	$(SRC_DIR)$(EXP_DIR)retoken.c $(SRC_DIR)$(PAR_DIR)redirects_utils.c $(SRC_DIR)$(PAR_DIR)parser_utils.c \
-	$(SRC_DIR)$(BLT_DIR)extras.c \
 	$(SRC_DIR)$(J_BLT_DIR)builtin_cd.c $(SRC_DIR)$(J_BLT_DIR)builtin_echo.c $(SRC_DIR)$(J_BLT_DIR)builtin_exit.c \
 	$(SRC_DIR)$(J_BLT_DIR)bultin_export.c $(SRC_DIR)$(J_BLT_DIR)buitlin_pwd.c $(SRC_DIR)$(J_BLT_DIR)builtin_unset.c \
 	$(SRC_DIR)$(J_BLT_DIR)builtins.c $(SRC_DIR)$(J_EXEC_DIR)execute_pipeline.c $(SRC_DIR)$(J_EXEC_DIR)executor.c \
