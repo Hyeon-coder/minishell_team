@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/28 00:58:29 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/28 01:20:04 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,6 +261,7 @@ void		get_prompt(t_ms *ms);
 void		shlvl(t_ms *ms);
 void		update_env(t_ms *ms);
 void		error_join(t_ms *ms, char *name, char *error);
+void		bi_exit(t_ms *ms, int ex_code, int error);
 
 ////////////////////////////////// Executor ///////////////////////////////////
 // void		ms_error(t_ms *ms, char *msg, int ex_code, int free_msg);
