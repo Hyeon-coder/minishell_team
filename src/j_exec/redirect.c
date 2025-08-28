@@ -6,7 +6,7 @@
 /*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 10:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/27 23:39:19 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/28 12:02:07 by JuHyeon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ static int	handle_input_redirections(t_ms *ms, t_infile **infiles)
 	while (infiles[i])
 	{
 		infile = infiles[i];
-		
-		// 파일 열기
 		fd = open(infile->name, O_RDONLY);
 		if (fd == -1)
 		{
@@ -41,8 +39,6 @@ static int	handle_input_redirections(t_ms *ms, t_infile **infiles)
 			ms->exit_status = 1;
 			return (-1);
 		}
-
-		// stdin으로 리디렉션
 		if (dup2(fd, STDIN_FILENO) == -1)
 		{
 			close(fd);
@@ -51,16 +47,12 @@ static int	handle_input_redirections(t_ms *ms, t_infile **infiles)
 			ms->exit_status = 1;
 			return (-1);
 		}
-
 		close(fd);
-		
-		// heredoc 파일인 경우 삭제
 		if (infile->heredoc)
 			unlink(infile->name);
 			
 		i++;
 	}
-
 	return (0);
 }
 
@@ -80,7 +72,6 @@ static int	handle_output_redirections(t_ms *ms, char **outfiles, int *append)
 	i = 0;
 	while (outfiles[i])
 	{
-		// append 플래그에 따라 파일 열기 모드 결정
 		if (append && append[i])
 			flags = O_WRONLY | O_CREAT | O_APPEND;
 		else
@@ -96,8 +87,6 @@ static int	handle_output_redirections(t_ms *ms, char **outfiles, int *append)
 			ms->exit_status = 1;
 			return (-1);
 		}
-
-		// stdout으로 리디렉션
 		if (dup2(fd, STDOUT_FILENO) == -1)
 		{
 			close(fd);
@@ -106,11 +95,9 @@ static int	handle_output_redirections(t_ms *ms, char **outfiles, int *append)
 			ms->exit_status = 1;
 			return (-1);
 		}
-
 		close(fd);
 		i++;
 	}
-
 	return (0);
 }
 
@@ -122,15 +109,10 @@ int	apply_redirections(t_ms *ms, t_cmd *cmd)
 {
 	if (!cmd)
 		return (0);
-
-	// 입력 리디렉션 처리
 	if (cmd->infile && handle_input_redirections(ms, cmd->infile) == -1)
 		return (-1);
-
-	// 출력 리디렉션 처리
 	if (cmd->outfile && handle_output_redirections(ms, cmd->outfile, cmd->append) == -1)
 		return (-1);
-
 	return (0);
 }
 
@@ -146,10 +128,7 @@ int	apply_redirections_for_empty(t_ms *ms, t_cmd *cmd)
 
 	if (!cmd)
 		return (0);
-
 	status = 0;
-
-	// 입력 파일들 존재 확인
 	if (cmd->infile)
 	{
 		i = 0;
@@ -169,8 +148,6 @@ int	apply_redirections_for_empty(t_ms *ms, t_cmd *cmd)
 			i++;
 		}
 	}
-
-	// 출력 파일들 생성 확인
 	if (cmd->outfile)
 	{
 		i = 0;
@@ -194,7 +171,6 @@ int	apply_redirections_for_empty(t_ms *ms, t_cmd *cmd)
 			i++;
 		}
 	}
-
 	if (status)
 		ms->exit_status = 1;
 	return (status);
