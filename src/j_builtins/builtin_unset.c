@@ -3,14 +3,83 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_unset.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 10:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/27 23:36:18 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/28 14:07:11 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+
+/*
+** Finds variable specified in var in the envp
+** Returns index in the envp for the variable
+*/
+int	find_in_envp(t_ms *ms, char **envp, char *var)
+{
+	int		i;
+	int		j;
+	char	*path;
+
+	i = 0;
+	while (envp[i])
+	{
+		j = 0;
+		while (envp[i][j] && envp[i][j] != '=')
+			j++;
+		path = x_substr(ms, envp[i], 0, j);
+		if (!ft_strcmp(path, var))
+		{
+			free(path);
+			return (i);
+		}
+		free(path);
+		i++;
+	}
+	return (-1);
+}
+
+/*
+** Duplicates a single line of the envp
+** In case of error, will free all previously allocated lines
+*/
+void	dup_envp(t_ms *ms, char **temp, int i, int j)
+{
+	temp[j] = ft_strdup(ms->envp[i]);
+	if (!temp[j])
+		arr_dup_fail(ms, temp, j);
+}
+
+
+static void	unset_envp(t_ms *ms, char *name)
+{
+	char	**temp;
+	int		i;
+	int		j;
+	int		rm;
+
+	i = 0;
+	j = 0;
+	if (!name || name[0] == 0 || (name[0] == '_' && name[1] == 0))
+		return ;
+	temp = malloc(ms->elements * sizeof (char *));
+	if (!temp)
+		ms_error(ms, "envp allocation failure", 1, 0);
+	rm = find_in_envp(ms, ms->envp, name);
+	if (rm < 0)
+		return ;
+	while (i < ms->elements)
+	{
+		if (i != rm)
+			dup_envp(ms, temp, i, j++);
+		i++;
+	}
+	ms->elements--;
+	temp[j] = NULL;
+	free_envp(ms);
+	ms->envp = temp;
+}
 
 /**
  * ge_mini_shell의 유효한 unset 식별자 검사 로직

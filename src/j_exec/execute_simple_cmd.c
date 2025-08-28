@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_simple_cmd.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 10:00:00 by juhyeonl          #+#    #+#             */
-/*   Updated: 2025/08/27 23:48:30 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/28 14:12:01 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,8 @@ int	execute_simple_command(t_ms *ms, t_cmd *cmd, int is_child)
 	int		original_fds[2];
 	int		status;
 
-	(void)is_child; // minishell_team 인터페이스 호환성
-
-	// 원본 stdin/stdout 백업
+	(void)is_child;
+	status = 0;
 	original_fds[0] = dup(STDIN_FILENO);
 	original_fds[1] = dup(STDOUT_FILENO);
 	if (original_fds[0] == -1 || original_fds[1] == -1)
@@ -101,25 +100,14 @@ int	execute_simple_command(t_ms *ms, t_cmd *cmd, int is_child)
 		ft_putendl_fd("minishell: dup failed", STDERR_FILENO);
 		return (1);
 	}
-
-	// 리디렉션 적용
 	if (apply_redirections(ms, cmd) == -1)
-	{
 		status = 1;
-	}
 	else
 	{
-		// 명령어가 없는 경우 (빈 명령어)
 		if (!cmd->full_cmd || !cmd->full_cmd[0])
-		{
 			status = 0;
-		}
-		// 빌트인 명령어인 경우 직접 실행
 		else if (is_builtin(cmd->full_cmd[0]))
-		{
 			status = execute_builtin_cmd(ms, cmd);
-		}
-		// 외부 명령어인 경우 fork해서 실행
 		else
 		{
 			pid = fork();
@@ -130,24 +118,15 @@ int	execute_simple_command(t_ms *ms, t_cmd *cmd, int is_child)
 				status = 1;
 			}
 			else if (pid == 0)
-			{
-				// 자식 프로세스
 				child_process(ms, cmd);
-			}
 			else
-			{
-				// 부모 프로세스
 				status = wait_for_child(pid);
-			}
 		}
 	}
-
-	// stdin/stdout 복원
 	dup2(original_fds[0], STDIN_FILENO);
 	dup2(original_fds[1], STDOUT_FILENO);
 	close(original_fds[0]);
 	close(original_fds[1]);
-
 	ms->exit_status = status;
 	return (status);
 }

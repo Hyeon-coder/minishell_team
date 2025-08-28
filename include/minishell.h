@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: juhyeonl <juhyeonl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:02:07 by clu               #+#    #+#             */
-/*   Updated: 2025/08/28 01:20:04 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/08/28 14:07:33 by juhyeonl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,6 +240,8 @@ int			execute_builtin_cmd(t_ms *ms, t_cmd *cmd);
 int			execute_builtin(t_ms *ms, char **args);
 int			is_builtin(char *cmd);
 int			builtin_env(t_ms *ms);
+int			find_in_envp(t_ms *ms, char **envp, char *var);
+void		dup_envp(t_ms *ms, char **temp, int i, int j);
 
 ////////////////////////////////// Utils //////////////////////////////////////
 void		*x_malloc(t_ms *ms, size_t size);
@@ -303,6 +305,16 @@ int			executor(t_ms *ms, t_ast *node);
 char		*find_command_path(char *cmd, t_ms *ms);
 int			apply_redirections_for_empty(t_ms *ms, t_cmd *cmd);
 int			apply_redirections(t_ms *ms, t_cmd *cmd);
+void		ms_error(t_ms *ms, char *msg, int ex_code, int free_msg);
+char		*find_var(t_ms *ms, char **envp, char *name);
+bool		export_var_to_envp(t_ms *ms, char *var);
+bool		export_var_to_envp(t_ms *ms, char *var);
+void		arr_dup_fail(t_ms *ms, char **arr, int j);
+void		close_pipes(t_ms *ms);
+int			start_heredoc(t_ms *ms, char *lim, t_infile *infile, int quo);
+char		*heredoc_name(t_ms *ms, int i);
+int			handle_heredoc(t_ms *ms, const char *heredoc, char *name, int quo);
+void		export_print_env(t_ms *ms);
 
 ////////////////////////////////// Signals ////////////////////////////////////
 void		do_sigint(int a, siginfo_t *b, void *c);
