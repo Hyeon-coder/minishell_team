@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: JuHyeon <JuHyeon@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mpierce <mpierce@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:59:10 by clu               #+#    #+#             */
-/*   Updated: 2025/08/28 01:19:44 by JuHyeon          ###   ########.fr       */
+/*   Updated: 2025/04/22 16:37:56 by mpierce          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,18 +78,4 @@ char	*x_strjoin_free(t_ms *ms, char *s1, char *s2)
 	free(s1);
 	free(s2);
 	return (joined);
-}
-
-void	bi_exit(t_ms *ms, int ex_code, int error)
-{
-	if (!error && isatty(STDERR_FILENO))
-		ft_putendl_fd("exit", STDERR_FILENO);
-	
-	if (ms)
-	{
-		free_ms(ms);
-		rl_clear_history();
-	}
-	
-	exit(ex_code);
 }
